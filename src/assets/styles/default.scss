@@ -1,0 +1,70 @@
+body {
+  // background-color: #111111;
+  // background-color: #2b2b33;
+  background-color: #101011;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+#app {
+  cursor: crosshair;
+  height: 100dvh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  scroll-snap-type: y mandatory;
+  scroll-snap-stop: always;
+  position: relative;
+}
+
+* {
+  font-family: "Recoleta-Bold", sans-serif;
+}
+
+canvas {
+  background-color: transparent;
+}
+
+.main {
+  padding: 50px;
+  max-width: 1920px;
+  margin-inline: auto;
+
+  @media (max-width: 768px) {
+    padding: 0 10px 10px 10px;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+p {
+  margin: 0;
+}
+
+.site__content {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+
+/*
+** Background noise effect 2
+*/
+
+.background_noise {
+  position: fixed;
+  left: 0%;
+  top: 0%;
+  right: 0%;
+  bottom: 0%;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  min-height: 100dvh;
+  background-image: url("../gifs/noise.gif");
+  background-position: 50% 50%;
+  background-size: 290px;
+  opacity: 0.08;
+}

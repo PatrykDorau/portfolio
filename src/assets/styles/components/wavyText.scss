@@ -1,0 +1,9 @@
+.title__wave {
+  background-image: url(/wave.svg);
+  background-repeat: repeat-x;
+  background-size: 50px;
+  background-position-x: 22px;
+  // background-position-y: 68%;
+  background-position-y: bottom;
+  width: fit-content;
+}

@@ -1,0 +1,47 @@
+/*Effects*/
+@import "./effects/glitch.scss";
+@import "./effects/glitch2.scss";
+
+/*Components*/
+@import "./components/modelWindow.scss";
+@import "./components/home.scss";
+@import "./components/navbar.scss";
+@import "./components/social.scss";
+@import "./components/projectsList.scss";
+@import "./components/contact.scss";
+@import "./components/socialBar.scss";
+@import "./components/wavyText.scss";
+
+/*Other*/
+@import "./default.scss";
+@import "./reusable.scss";
+
+/*Fonts*/
+@font-face {
+  font-family: RushfordPrinted;
+  src: url("../fonts/RushfordPrinted-MVnDe.otf");
+}
+@font-face {
+  font-family: grain;
+  src: url("../fonts/ASPHALTIC GRAIN CONDENSED PERSONAL USE.ttf");
+}
+@font-face {
+  font-family: hermano;
+  src: url("../fonts/HermanoAlto Stamp.ttf");
+}
+@font-face {
+  font-family: PPMori-SemiBold;
+  src: url("../fonts/PPMori-SemiBold.otf");
+}
+@font-face {
+  font-family: Serif-italic;
+  src: url("../fonts/Serif-Italic.ttf.woff");
+}
+@font-face {
+  font-family: Acorn;
+  src: url("../fonts/Acorn-SemiBold.ttf");
+}
+@font-face {
+  font-family: Recoleta-Bold;
+  src: url("../fonts/Recoleta-Bold.ttf");
+}

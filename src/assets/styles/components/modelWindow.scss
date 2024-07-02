@@ -1,0 +1,80 @@
+.logo-model {
+  width: 300px;
+  height: 300px;
+  z-index: 1 !important;
+  transform: translate(100vw, 0);
+  transition: all 0.2s 0.5s ease;
+  // animation: slideRight 1s 0.1s ease forwards;
+
+  // @keyframes slideRight {
+  //   from {
+  //     transform: translate(100vw, 0);
+  //   }
+  //   to {
+  //     transform: translate(0, 0);
+  //   }
+  // }
+}
+
+.fast_forward-model {
+  background-color: transparent;
+  background-image: url("../gifs/noise_effect_50ms.webp");
+  background-size: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  height: fit-content;
+  aspect-ratio: 1/1;
+  z-index: 1 !important;
+  border-radius: 50%;
+  max-width: clamp(400px, 50%, 70dvh);
+  animation: scaleDown 1s 0.1s ease forwards;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  @keyframes scaleDown {
+    from {
+      scale: 3;
+    }
+    to {
+      scale: 1;
+    }
+  }
+
+  .bg1 {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+}
+
+@media (max-width: 767px) {
+  .fast_forward-model {
+    position: relative !important;
+    top: auto;
+    right: auto;
+    transform: none;
+    display: block;
+    margin: auto;
+    width: clamp(250px, 95%, 400px);
+    height: clamp(250px, 95%, 400px);
+    aspect-ratio: 1/1;
+    margin-top: 10px;
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    scale: 0;
+  }
+  to {
+    scale: 1;
+  }
+}

@@ -1,0 +1,33 @@
+.social__bar {
+  position: fixed;
+  top: 50%;
+  left: 10px;
+  z-index: 3;
+  transform: translate(0, -50%);
+
+  .social {
+    display: flex;
+    flex-direction: column;
+
+    .link__container {
+      padding-right: 50px;
+
+      img {
+        transition: transform 0.5s ease-out;
+      }
+
+      &:first-child {
+        padding-top: 50px;
+        padding-bottom: 10px;
+      }
+
+      &:nth-child(2) {
+        padding-block: 10px;
+      }
+      &:last-child {
+        padding-bottom: 50px;
+        padding-top: 10px;
+      }
+    }
+  }
+}
