@@ -27,10 +27,33 @@
       <div class="item_text">
         <div class="item_desc">
           <div class="item_info">
-            <p>Stack: {{ props.data.stack }}</p>
-            <p>Team: {{ props.data.team }}</p>
+            <div class="info_col">
+              <p class="col_title">Stack</p>
+              <p>
+                {{ props.data.stack }}
+              </p>
+            </div>
+            <div class="info_col">
+              <p class="col_title">Team</p>
+              <p>
+                {{ props.data.team }}
+              </p>
+            </div>
+            <div class="info_col">
+              <p class="col_title">Year</p>
+              <p>{{ props.data.year }}</p>
+            </div>
           </div>
-          <p>Description: {{ props.data.description }}</p>
+          <p class="desc_content">{{ props.data.description }}</p>
+          <div v-if="props.data.flow" class="flow">
+            <p
+              class="flow_item"
+              v-for="item in props.data.flow"
+              :key="item.title"
+            >
+              <strong>{{ item.title }}:</strong> {{ item.text }}
+            </p>
+          </div>
         </div>
       </div>
     </div>

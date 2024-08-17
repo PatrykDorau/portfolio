@@ -19,14 +19,6 @@
               :play="fastForwarding"
             />
           </p>
-          <div class="home_text_p2">
-            <GlitchEffect
-              :preGlitch="entryData"
-              :glitch="entryData"
-              customClass="home_description"
-              :play="copyChange"
-            />
-          </div>
           <div class="buttons">
             <div class="rewind" @click="manageYear(0)">
               <span class="content">Backward</span>
@@ -79,6 +71,14 @@
               <span class="content">Forward</span>
             </div>
           </div>
+          <div class="home_text_p2">
+            <GlitchEffect
+              :preGlitch="entryData"
+              :glitch="entryData"
+              customClass="home_description"
+              :play="copyChange"
+            />
+          </div>
         </div>
       </div>
       <ModelWindowComponent
@@ -127,7 +127,7 @@
           />
           <WavyTextComponent text="Tech stack" />
         </div>
-        <p class="content">Vue TS SASS HTML GIT Threejs Blender</p>
+        <p class="content">Vue | TS | SASS | HTML | GIT | Threejs | Blender</p>
       </div>
       <div class="box">
         <div class="title">
@@ -169,39 +169,55 @@ const copyData = ref([
     yearStart: 1999,
     yearEnd: 1999,
     intervalDec: 1000,
-    intervalInc: 500,
+    intervalInc: 250,
     copy: "Nothing here, too soon for me.",
     active: false,
   },
   {
     yearStart: 2000,
     yearEnd: 2000,
-    intervalDec: 500,
+    intervalDec: 250,
     intervalInc: 100,
-    copy: "Born in Czarna Woda, moved to Poznań later.",
+    copy: "Born in a small, picturesque town in Poland, Czarna Woda. The beginning of a journey in a world full of endless possibilities.",
+    active: false,
+  },
+  {
+    yearStart: 2007,
+    yearEnd: 2007,
+    intervalDec: 100,
+    intervalInc: 100,
+    copy: "Started education at the local primary school. A child with a passion to football beginning his journey in a local club.",
+    active: false,
+  },
+  {
+    yearStart: 2012,
+    yearEnd: 2014,
+    intervalDec: 150,
+    intervalInc: 100,
+    copy: "Discovered the magic of computers. Unfortunately spent countless hours playing games, complete waste of time but ignited a passion for technology.",
     active: false,
   },
   {
     yearStart: 2020,
     yearEnd: 2021,
-    intervalDec: 500,
-    intervalInc: 500,
-    copy: "First github entry, and first commercial job as Full Stack Developer.",
+    intervalDec: 100,
+    intervalInc: 250,
+    copy: "First GitHub entry marked the beginning of a professional journey. Landed the first commercial job as a Full Stack Developer, working on projects that laid the foundation for future expertise.",
     active: false,
   },
   {
     yearStart: 2021,
     yearEnd: 2022,
-    intervalDec: 500,
-    intervalInc: 500,
-    copy: "Re-branding to Front End Developer and rapid promotion to the mid level.",
+    intervalDec: 250,
+    intervalInc: 250,
+    copy: "Re-branded as a Front End Developer, focusing on mastering Vue.js and modern JavaScript frameworks. Rapidly promoted to mid-level, recognized for delivering high-quality, responsive web applications.",
     active: false,
   },
   {
     yearStart: 2022,
     yearEnd: date.getFullYear(),
     intervalDec: 500,
-    intervalInc: 500,
+    intervalInc: 250,
     copy: "Contact to check my status. I am very possibly looking for someone to write the next chapter of my story.",
     active: false,
     start: true,
@@ -209,17 +225,57 @@ const copyData = ref([
   {
     yearStart: date.getFullYear(),
     yearEnd: date.getFullYear() + 3,
-    intervalDec: 500,
-    intervalInc: 50,
-    copy: "Prosperous senior Front End Developer.",
+    intervalDec: 250,
+    intervalInc: 250,
+    copy: "Continued to refine skills, delving into TypeScript and advanced CSS techniques. Worked on high-impact projects, building a reputation as a reliable and innovative developer.",
     active: false,
   },
   {
-    yearStart: date.getFullYear(),
+    yearStart: date.getFullYear() + 4,
+    yearEnd: date.getFullYear() + 5,
+    intervalDec: 250,
+    intervalInc: 250,
+    copy: "Achieved senior developer status, leading front-end teams and driving the technical vision for complex web projects. Began mentoring junior developers and contributing to open-source projects.",
+    active: false,
+  },
+  {
+    yearStart: date.getFullYear() + 6,
+    yearEnd: date.getFullYear() + 8,
+    intervalDec: 250,
+    intervalInc: 250,
+    copy: "Started working on cutting-edge web technologies, pushing the boundaries of what’s possible on the web. Became a thought leader in the field, regularly speaking at international conferences.",
+    active: false,
+  },
+  {
+    yearStart: date.getFullYear() + 9,
+    yearEnd: date.getFullYear() + 11,
+    intervalDec: 250,
+    intervalInc: 250,
+    copy: "Launched own startup focused on providing innovative web solutions to businesses. The startup quickly gained traction, becoming a leader in the industry.",
+    active: false,
+  },
+  {
+    yearStart: date.getFullYear() + 15,
+    yearEnd: date.getFullYear() + 25,
+    intervalDec: 250,
+    intervalInc: 250,
+    copy: "Grew the startup into a global enterprise, known for its cutting-edge technology and exceptional user experiences. Achieved financial independence and continued to innovate in the tech space.",
+    active: false,
+  },
+  {
+    yearStart: date.getFullYear() + 16,
+    yearEnd: date.getFullYear() + 50,
+    intervalDec: 250,
+    intervalInc: 100,
+    copy: "Enjoying life as a respected figure in the tech industry, with a legacy of innovation and mentorship. Occasionally consulted on major projects and continued to explore new technologies.",
+    active: false,
+  },
+  {
+    yearStart: date.getFullYear() + 50,
     yearEnd: 2100,
     intervalDec: 50,
     intervalInc: 50,
-    copy: "Bitcoin reach 1.000.000$. The wall is almost finished. EU is one country. Oil is running out. Life exists on Mars.",
+    copy: "Trust me, you'll look back on this and smile. Bitcoin has finally smashed through the $1,000,000. The wall? It's nearly done. Europe's a single nation now, and oh, did I mention? Mars isn't just a dusty red dot anymore; we’re swapping postcards with the neighbors.",
     active: false,
   },
 ]);

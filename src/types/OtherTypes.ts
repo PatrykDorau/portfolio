@@ -22,10 +22,17 @@ type ProjectsListItem = {
   title: string;
   id: number;
   videoPath: string;
+  year: string;
   stack: string;
   team: string;
   description: string;
   active: boolean;
+  flow?: Flow[];
+};
+
+type Flow = {
+  title: string;
+  text: string;
 };
 
 export type { GlitchEffect, NavbarItem, ProjectsListItem, ProjectItemData };
