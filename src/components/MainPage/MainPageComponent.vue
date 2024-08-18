@@ -161,40 +161,24 @@ let loaded = ref(false);
 
 let currentYear = ref<string | number>("20xx");
 let entryData = ref(
-  "My name is Patryk, I'm a Frontend Developer. Discover my story with time travel"
+  "My name is Patryk, I'm a Frontend Developer. Discover development of my career with time travel"
 );
 
 const copyData = ref([
   {
-    yearStart: 1999,
-    yearEnd: 1999,
-    intervalDec: 1000,
-    intervalInc: 250,
-    copy: "Nothing here, too soon for me.",
-    active: false,
-  },
-  {
     yearStart: 2000,
-    yearEnd: 2000,
-    intervalDec: 250,
-    intervalInc: 100,
-    copy: "Born in a small, picturesque town in Poland, Czarna Woda. The beginning of a journey in a world full of endless possibilities.",
-    active: false,
-  },
-  {
-    yearStart: 2007,
-    yearEnd: 2007,
+    yearEnd: 2001,
     intervalDec: 100,
-    intervalInc: 100,
-    copy: "Started education at the local primary school. A child with a passion to football beginning his journey in a local club.",
+    intervalInc: 250,
+    copy: "[...]",
     active: false,
   },
   {
-    yearStart: 2012,
-    yearEnd: 2014,
-    intervalDec: 150,
-    intervalInc: 100,
-    copy: "Discovered the magic of computers. Unfortunately spent countless hours playing games, complete waste of time but ignited a passion for technology.",
+    yearStart: 2019,
+    yearEnd: 2020,
+    intervalDec: 100,
+    intervalInc: 250,
+    copy: "First Udemy course on font end mastery taken.",
     active: false,
   },
   {
@@ -202,7 +186,7 @@ const copyData = ref([
     yearEnd: 2021,
     intervalDec: 100,
     intervalInc: 250,
-    copy: "First GitHub entry marked the beginning of a professional journey. Landed the first commercial job as a Full Stack Developer, working on projects that laid the foundation for future expertise.",
+    copy: "First GitHub entry marked the beginning of a professional journey. Landed the first commercial job working on projects that laid the foundation for future expertise.",
     active: false,
   },
   {
@@ -210,7 +194,7 @@ const copyData = ref([
     yearEnd: 2022,
     intervalDec: 250,
     intervalInc: 250,
-    copy: "Re-branded as a Front End Developer, focusing on mastering Vue.js and modern JavaScript frameworks. Rapidly promoted to mid-level, recognized for delivering high-quality, responsive web applications.",
+    copy: "Re-branded as a Front End Developer, focusing on mastering Vue.js. Rapidly promoted to mid-level, recognized for delivering high-quality web applications.",
     active: false,
   },
   {
@@ -218,16 +202,16 @@ const copyData = ref([
     yearEnd: date.getFullYear(),
     intervalDec: 500,
     intervalInc: 250,
-    copy: "Contact to check my status. I am very possibly looking for someone to write the next chapter of my story.",
+    copy: "Feel free to reach out—I'm likely on the lookout for someone to help craft the next chapter of my journey.",
     active: false,
     start: true,
   },
   {
     yearStart: date.getFullYear(),
-    yearEnd: date.getFullYear() + 3,
+    yearEnd: date.getFullYear() + 2,
     intervalDec: 250,
     intervalInc: 250,
-    copy: "Continued to refine skills, delving into TypeScript and advanced CSS techniques. Worked on high-impact projects, building a reputation as a reliable and innovative developer.",
+    copy: "Continued to refine skills, delving into TypeScript and 3D techniques. Worked on high-impact projects, building a reputation as a reliable developer.",
     active: false,
   },
   {
@@ -243,7 +227,7 @@ const copyData = ref([
     yearEnd: date.getFullYear() + 8,
     intervalDec: 250,
     intervalInc: 250,
-    copy: "Started working on cutting-edge web technologies, pushing the boundaries of what’s possible on the web. Became a thought leader in the field, regularly speaking at international conferences.",
+    copy: "Started working on cutting-edge web technologies, pushing the boundaries of what’s possible on the web. Became a thought leader in the field.",
     active: false,
   },
   {

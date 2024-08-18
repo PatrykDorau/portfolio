@@ -32,7 +32,7 @@ let projectsActive = computed(() => {
 
 let navigationItems = ref([
   {
-    title: "Home",
+    title: "About",
     id: 1,
     scrollId: "1",
     active: true,
