@@ -13,7 +13,7 @@
       <div class="info">
         <div class="personal">
           <div class="column">
-            <p class="title">Write my next chapter and work with me</p>
+            <p class="title">Work with me</p>
             <p class="text">
               Write to me and check my status. I might be open for work! <br />
               @2024 Patryk Dorau. All rights reserved. <br />
@@ -68,7 +68,7 @@
             alt="Contact me text"
           />
         </div>
-        <img class="photo" src="/me.jpg" alt="Me" />
+        <img class="photo" src="/me.jfif" alt="Me" />
       </div>
     </div>
   </div>

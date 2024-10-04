@@ -39,13 +39,13 @@
 
     div.curved__wrapper {
       position: absolute;
-      // max-width: calc(100dvw * 0.5);
     }
 
     .curved {
-      animation: rotate 10s linear infinite;
+      animation: rotate 25s linear infinite;
       border-radius: 50%;
       max-width: 340px;
+      filter: brightness(0.95);
 
       @media (max-width: 768px) {
         max-width: 280px;
