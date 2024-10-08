@@ -13,11 +13,17 @@
       <div class="info">
         <div class="personal">
           <div class="column">
-            <p class="title">Work with me</p>
+            <p class="title">Work with me!</p>
             <p class="text">
-              Write to me and check my status. I might be open for work! <br />
-              @2024 Patryk Dorau. All rights reserved. <br />
-              Last updated on 23.06.2024 23:08 UTC
+              <div class="p1">
+                Please feel free to reach out to me to discuss my current
+                status.<br />
+                I may be open to new job opportunities! <br />
+              </div>
+              <div class="p2">
+                @2024 Patryk Dorau. All rights reserved. <br />
+                Last updated on 08.10.2024 18:08 UTC
+              </div>
             </p>
             <a href="/public/CV.pdf" target="_blank" class="cv">
               <span class="indicator">→</span>

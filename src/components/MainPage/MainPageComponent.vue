@@ -18,12 +18,11 @@
           <div class="home_text_p2">
             <p class="home_description">
               <div class="fl">
-                <span>Yo! My name is</span>
-                <WavyTextComponent text="Patryk" bg-size="80px" bgPos="75%" />
+                <span>Hi there!</span>
+                <WavyTextComponent text="I'm Patryk." bg-size="80px" bgPos="75%" />
               </div>
               <span class="sl"
-                >I am a dedicated front-end developer. <br> I have decided that it
-                is high time to move forward!</span
+                >I’m dedicated front-end developer passionate about crafting enjoyable and functional web experiences. I'm excited to move forward in my career and embrace new opportunities ahead.</span
               >
               <div class="buttons">
                 <div class="arrow__container" @click="scrollTo('2')">
@@ -40,6 +39,7 @@
                     bg-size="60px"
                   />
                 </div>
+                <a href="/public/CV.pdf" target="_blank" class="arrow__container"><span class="indicator">→</span><div class="title__wave content" style="background-size: 60px; background-position-x: 333.8px;">Resume</div></a>
               </div>
             </p>
           </div>
@@ -64,6 +64,7 @@
             height="30"
             src="https://img.icons8.com/fluency-systems-filled/48/FFFFFF/briefcase.png"
             alt="briefcase"
+            class="swing"
           />
           <WavyTextComponent text="Recent experience" />
         </div>
@@ -76,10 +77,11 @@
             height="30"
             src="https://img.icons8.com/glyph-neue/64/FFFFFF/marker--v1.png"
             alt="marker--v1"
+            class="scale"
           />
           <WavyTextComponent text="Location" />
         </div>
-        <p class="content">Poznań Poland</p>
+        <p class="content">Poznań | Poland</p>
       </div>
       <div class="box">
         <div class="title">
@@ -88,6 +90,7 @@
             height="30"
             src="https://img.icons8.com/ios-filled/50/FFFFFF/settings.png"
             alt="settings"
+            class="rotate"
           />
           <WavyTextComponent text="Tech stack" />
         </div>
@@ -100,10 +103,11 @@
             height="30"
             src="https://img.icons8.com/ios-glyphs/30/FFFFFF/graduation-cap--v1.png"
             alt="graduation-cap--v1"
+            class="scale"
           />
           <WavyTextComponent text="Degree" />
         </div>
-        <p class="content">Bachelor's @ Math data analysis</p>
+        <p class="content">Bachelor's - Math data analysis</p>
       </div>
     </div>
   </div>

@@ -86,12 +86,12 @@
           letter-spacing: 1px;
           .home_description {
             position: relative;
-            // font-size: clamp(22px, calc(100vw * 24 / 1600), 24px);
             min-width: fit-content;
 
             .sl {
-              font-size: 18px;
-              color: #7c7c83;
+              font-size: 16px;
+              color: rgba(255, 255, 255, 0.65);
+              text-shadow: none !important;
 
               @media (max-width: 768px) {
                 font-size: 16px;
@@ -100,6 +100,7 @@
 
             .fl {
               font-size: 36px;
+              margin-bottom: 5px;
 
               @media (max-width: 768px) {
                 font-size: 32px;
@@ -199,6 +200,36 @@
         font-size: 16px;
         flex-direction: row-reverse;
         justify-content: flex-end;
+        margin-left: -5px;
+
+        .rotate {
+          animation: rotate 4s infinite linear;
+          @keyframes rotateItself {
+            from {
+              transform: rotate(0deg);
+            }
+            to {
+              transform: rotate(360deg);
+            }
+          }
+        }
+
+        .swing {
+          animation: sway 2s infinite ease-in-out;
+          transform-origin: top;
+
+          @keyframes sway {
+            0% {
+              transform: rotate(8deg);
+            }
+            50% {
+              transform: rotate(-8deg);
+            }
+            100% {
+              transform: rotate(8deg);
+            }
+          }
+        }
 
         p {
           margin: 0;
@@ -206,7 +237,7 @@
       }
 
       .content {
-        color: #7c7c83;
+        color: rgba(255, 255, 255, 0.65);
         text-transform: capitalize;
         font-size: 14px;
       }

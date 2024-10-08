@@ -76,9 +76,11 @@ body:has(.item_text_wrapper:hover) {
       opacity: 0;
       z-index: -2;
       scale: 0;
+      background-color: transparent;
       transition:
         opacity 0.2s ease,
-        scale 1s ease;
+        scale 1s ease,
+        background-color 1s ease 1s;
       width: clamp(300px, 50dvw, 600px);
       pointer-events: none;
       height: 100%;
@@ -99,6 +101,7 @@ body:has(.item_text_wrapper:hover) {
         left: 0;
         width: 100%;
         z-index: 45;
+        // background-color: rgba(0, 0, 0, 0.8);
       }
     }
   }
@@ -106,7 +109,6 @@ body:has(.item_text_wrapper:hover) {
   .list {
     display: flex;
     flex-direction: column;
-    gap: 30px;
     margin-block: auto;
     max-height: 100%;
 
@@ -127,8 +129,7 @@ body:has(.item_text_wrapper:hover) {
       padding-inline: 2px;
       transition: all 0.2s ease;
       position: relative;
-
-      padding: 25px 15px;
+      padding: 35px 15px;
 
       &.active {
         .item_text {
@@ -271,10 +272,11 @@ body:has(.item_text_wrapper:hover) {
           .flow {
             display: flex;
             flex-direction: column;
-            gap: 5px;
+            gap: 10px;
 
             strong {
               color: white;
+              margin-right: 5px;
             }
           }
         }
