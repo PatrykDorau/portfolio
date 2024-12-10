@@ -111,7 +111,11 @@
     <div class="nav__overlay">
       <div class="nav__content">
         <div class="social">
-          <a href="/cv_patryk.pdf" target="_blank" type="application/pdf">
+          <a
+            href="https://drive.google.com/file/d/10yB18pYrLf8HsVgaNFCBEBinqP9WwO-R/view?usp=sharing"
+            target="_blank"
+            type="application/pdf"
+          >
             <img
               width="35"
               height="35"
@@ -130,11 +134,11 @@
               src="https://img.icons8.com/sf-black-filled/64/FFFFFF/new-post.png"
               alt="new-post"
             />
-            <span>Email</span>
+            <span>dorau.patryk1@gmail.com</span>
           </div>
           <div
             class="clipboard_wrapper"
-            @click="copyToClipboard('730798773', $event)"
+            @click="copyToClipboard('+48730798773', $event)"
           >
             <img
               width="30"
@@ -142,7 +146,7 @@
               src="https://img.icons8.com/ios-filled/50/FFFFFF/apple-phone.png"
               alt="apple-phone"
             />
-            <span>Phone</span>
+            <span>+48 730 798 773</span>
           </div>
         </div>
         <div class="navigation">

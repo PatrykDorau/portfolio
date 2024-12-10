@@ -45,7 +45,7 @@ import BackgroundNoise from "./components/BackgroundNoiseComponent.vue";
   );
 
   margin: 0;
-  background-color: #101011;
+  background-color: #101011 !important;
   overflow-x: hidden;
   background-blend-mode: soft-light;
   position: fixed;
