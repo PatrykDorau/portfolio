@@ -41,11 +41,13 @@ let canvas = document.querySelector(`.${props.canvasClass}`);
 let model: any;
 
 let vid = document.createElement("video");
-vid.src = props.videoSrc || "./test_vid.mp4";
-vid.muted = true;
-vid.autoplay = true;
-vid.loop = true;
-vid.play();
+if (props.videoSrc) {
+  vid.src = props.videoSrc;
+  vid.muted = true;
+  vid.autoplay = true;
+  vid.loop = true;
+  vid.play();
+}
 
 watch(
   animationList,
@@ -80,7 +82,10 @@ watch(
   () => {
     if (props.canvasClass === "tablet" && props.videoSrc) {
       vidTexture.dispose();
-      vid.src = props.videoSrc || "./test_vid.mp4";
+      vid.src = props.videoSrc;
+      vid.muted = true;
+      vid.autoplay = true;
+      vid.loop = true;
 
       // Waiting for show animation to play
       setTimeout(() => {
