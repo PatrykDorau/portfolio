@@ -25,7 +25,7 @@
                 Last updated on 08.10.2024 18:08 UTC
               </div>
             </p>
-            <a href="/public/CV.pdf" target="_blank" class="cv">
+            <a href="/cv_patryk.pdf" target="_blank" class="cv">
               <span class="indicator">→</span>
               <WavyTextComponent
                 custom-class="content"

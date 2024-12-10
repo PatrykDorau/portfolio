@@ -39,7 +39,7 @@
                     bg-size="60px"
                   />
                 </div>
-                <a href="/public/CV.pdf" target="_blank" class="arrow__container"><span class="indicator">→</span><div class="title__wave content" style="background-size: 60px; background-position-x: 333.8px;">Resume</div></a>
+                <a href="/cv_patryk.pdf" target="_blank" class="arrow__container"><span class="indicator">→</span><div class="title__wave content" style="background-size: 60px; background-position-x: 333.8px;">Resume</div></a>
               </div>
             </p>
           </div>

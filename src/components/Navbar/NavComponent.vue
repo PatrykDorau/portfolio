@@ -111,7 +111,7 @@
     <div class="nav__overlay">
       <div class="nav__content">
         <div class="social">
-          <a href="/public/CV.pdf" target="_blank" type="application/pdf">
+          <a href="/cv_patryk.pdf" target="_blank" type="application/pdf">
             <img
               width="35"
               height="35"
