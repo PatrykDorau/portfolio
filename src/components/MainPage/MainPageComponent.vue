@@ -94,7 +94,7 @@
           />
           <WavyTextComponent text="Tech stack" />
         </div>
-        <p class="content">Vue | TS | SASS | HTML | GIT | Threejs | Blender</p>
+        <p class="content">Vue | TS | SASS | HTML | Vitest | GIT | Bitbucket | Jira | Threejs | Blender</p>
       </div>
       <div class="box">
         <div class="title">
