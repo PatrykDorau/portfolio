@@ -5,7 +5,6 @@ import BackgroundNoise from "./components/BackgroundNoiseComponent.vue";
 
 <template>
   <BackgroundNoise />
-  <!-- <div class="foreground"></div> -->
   <MainLayout msg="Everything has a beginning" />
 </template>
 
@@ -23,7 +22,7 @@ import BackgroundNoise from "./components/BackgroundNoiseComponent.vue";
   filter: drop-shadow(0 0 2em #42b883aa);
 }
 
-.foreground {
+/* .foreground {
   background: linear-gradient(
     to bottom,
     hsla(200, 100%, 85%, 0) 0%,
@@ -55,7 +54,7 @@ import BackgroundNoise from "./components/BackgroundNoiseComponent.vue";
   bottom: -100%;
   opacity: 0.3;
   animation: slideSides 30s linear infinite;
-}
+} */
 
 @keyframes slideSides {
   0% {

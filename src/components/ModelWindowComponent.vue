@@ -41,7 +41,16 @@ let canvas = document.querySelector(`.${props.canvasClass}`);
 let model: any;
 
 let vid = document.createElement("video");
+let loader = document.createElement("video");
+
+loader.src = "loader.mp4";
+loader.muted = true;
+loader.autoplay = true;
+loader.loop = true;
+loader.play();
+
 if (props.videoSrc) {
+  console.log(props.videoSrc);
   vid.src = props.videoSrc;
   vid.muted = true;
   vid.autoplay = true;
@@ -70,6 +79,7 @@ watch(
  * Textures
  */
 
+let loaderTexture = new THREE.VideoTexture(loader);
 let vidTexture = new THREE.VideoTexture(vid);
 
 vidTexture.colorSpace = THREE.SRGBColorSpace;
@@ -82,32 +92,51 @@ watch(
   () => {
     if (props.canvasClass === "tablet" && props.videoSrc) {
       vidTexture.dispose();
-      vid.src = props.videoSrc;
-      vid.muted = true;
-      vid.autoplay = true;
-      vid.loop = true;
-
-      // Waiting for show animation to play
-      setTimeout(() => {
-        vid.play();
-      }, 500);
-
-      vidTexture = new THREE.VideoTexture(vid);
-      vidTexture.colorSpace = THREE.SRGBColorSpace;
-      vidTexture.wrapS = THREE.RepeatWrapping;
-      vidTexture.minFilter = THREE.LinearFilter;
-      vidTexture.magFilter = THREE.LinearFilter;
-      vidTexture.repeat.x = -1;
 
       model.children[0].traverse((el: any) => {
         if (el.name === "uploads_files_629424_mpm_F20_9") {
           const mat = new THREE.MeshBasicMaterial({
-            map: vidTexture,
+            map: loaderTexture,
           });
           mat.reflectivity = 0;
           el.material = mat;
         }
       });
+
+      vid.src = props.videoSrc;
+      vid.muted = true;
+      vid.autoplay = true;
+      vid.loop = true;
+
+      // console.log(props.videoSrc);
+      // // Waiting for show animation to play
+      // setTimeout(() => {
+      //   vid.play();
+      //   // loader.play();
+      // }, 500);
+
+      vid.onloadeddata = () => {
+        // Wait for show animation to play
+        vidTexture = new THREE.VideoTexture(vid);
+        vidTexture.colorSpace = THREE.SRGBColorSpace;
+        vidTexture.wrapS = THREE.RepeatWrapping;
+        vidTexture.minFilter = THREE.LinearFilter;
+        vidTexture.magFilter = THREE.LinearFilter;
+        vidTexture.repeat.x = -1;
+
+        model.children[0].traverse((el: any) => {
+          if (el.name === "uploads_files_629424_mpm_F20_9") {
+            const mat = new THREE.MeshBasicMaterial({
+              map: vidTexture,
+            });
+            mat.reflectivity = 0;
+            el.material = mat;
+          }
+        });
+        setTimeout(() => {
+          vid.play();
+        }, 500);
+      };
     }
   }
 );

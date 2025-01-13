@@ -107,8 +107,8 @@
         ></rect>
       </svg>
     </div>
-
     <div class="nav__overlay">
+      <BackgroundNoise />
       <div class="nav__content">
         <div class="social">
           <a
@@ -208,11 +208,13 @@
 </template>
 
 <script setup lang="ts">
+import BackgroundNoise from "../../components/BackgroundNoiseComponent.vue";
 import NavItem from "./NavItemComponent.vue";
 import ModelWindowComponent from "../ModelWindowComponent.vue";
 import { ref } from "vue";
 
 let navToggled = ref(false);
+let noise = ref(false);
 let closeState = ref(false);
 
 interface NavigationItem {
@@ -230,11 +232,18 @@ const toggleNav = () => {
     setTimeout(() => {
       navToggled.value = false;
     }, 500);
+    closeState.value = true;
+    setTimeout(() => {
+      noise.value = false;
+    }, 800);
   } else {
     closeState.value = false;
     setTimeout(() => {
       navToggled.value = true;
     }, 100);
+    setTimeout(() => {
+      noise.value = true;
+    }, 50);
   }
 };
 

@@ -48,23 +48,3 @@ p {
   flex-direction: column;
   gap: 50px;
 }
-
-/*
-** Background noise effect 2
-*/
-
-.background_noise {
-  position: fixed;
-  left: 0%;
-  top: 0%;
-  right: 0%;
-  bottom: 0%;
-  z-index: 1;
-  display: block;
-  width: 100%;
-  min-height: 100dvh;
-  background-image: url("../gifs/noise.gif");
-  background-position: 50% 50%;
-  background-size: 290px;
-  opacity: 0.08;
-}

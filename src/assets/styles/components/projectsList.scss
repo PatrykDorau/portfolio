@@ -167,14 +167,6 @@ body:has(.item_text_wrapper:hover) {
         }
       }
 
-      &::after {
-        content: "";
-        width: 100%;
-        height: 100%;
-        background-image: url(/src/assets/gifs/noise.gif);
-        background-position: 50% 50%;
-      }
-
       .item_title {
         display: flex;
         justify-content: space-between;
