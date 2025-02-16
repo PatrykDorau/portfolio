@@ -93,6 +93,10 @@ watch(
     if (props.canvasClass === "tablet" && props.videoSrc) {
       vidTexture.dispose();
 
+      const aspectRatio = loader.videoWidth / loader.videoHeight;
+      loaderTexture.repeat.set(1, aspectRatio);
+      loaderTexture.offset.set(0, (1 - aspectRatio) / 2);
+
       model.children[0].traverse((el: any) => {
         if (el.name === "uploads_files_629424_mpm_F20_9") {
           const mat = new THREE.MeshBasicMaterial({
@@ -107,13 +111,6 @@ watch(
       vid.muted = true;
       vid.autoplay = true;
       vid.loop = true;
-
-      // console.log(props.videoSrc);
-      // // Waiting for show animation to play
-      // setTimeout(() => {
-      //   vid.play();
-      //   // loader.play();
-      // }, 500);
 
       vid.onloadeddata = () => {
         // Wait for show animation to play

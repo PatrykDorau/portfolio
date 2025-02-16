@@ -112,7 +112,7 @@
       <div class="nav__content">
         <div class="social">
           <a
-            href="https://drive.google.com/file/d/10yB18pYrLf8HsVgaNFCBEBinqP9WwO-R/view?usp=sharing"
+            href="https://drive.google.com/file/d/17Dx_HKvm1cV8IKt0U4BoOpj3rrzzl-yT/view?usp=drive_link"
             target="_blank"
             type="application/pdf"
           >

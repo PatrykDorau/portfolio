@@ -18,14 +18,14 @@
               <div class="p1">
                 Please feel free to reach out to me to discuss my current
                 status.<br />
-                I may be open to new job opportunities! <br />
+                I am open to new job opportunities! <br />
               </div>
               <div class="p2">
                 @2024 Patryk Dorau. All rights reserved. <br />
-                Last updated on 08.10.2024 18:08 UTC
+                Last updated on 16.02.2025 15:49 UTC
               </div>
             </p>
-            <a href="https://drive.google.com/file/d/10yB18pYrLf8HsVgaNFCBEBinqP9WwO-R/view?usp=sharing" target="_blank" class="cv">
+            <a href="https://drive.google.com/file/d/17Dx_HKvm1cV8IKt0U4BoOpj3rrzzl-yT/view?usp=drive_link" target="_blank" class="cv">
               <span class="indicator">→</span>
               <WavyTextComponent
                 custom-class="content"

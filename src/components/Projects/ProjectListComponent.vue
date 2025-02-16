@@ -52,7 +52,7 @@ let list = ref<ProjectsListItem[]>([
     title: "Employee Management Panel",
     id: 1,
     videoPath: "/rcp_edited_converted.mp4",
-    stack: "Vue 3 & Ts & Vite",
+    stack: "Vue 3, Ts, Pinia, Axios, Vite",
     team: "1 FE Dev & 1 BE Dev",
     flow: [
       {
@@ -76,7 +76,7 @@ let list = ref<ProjectsListItem[]>([
     title: "Local News",
     id: 2,
     videoPath: "/cosmo_news_converted.mp4",
-    stack: "Vue 3 & Ts & Vite",
+    stack: "Vue 3, Ts, Axios, Vite",
     team: "1 FE Dev & 1 BE Dev",
     flow: [
       {
@@ -92,7 +92,7 @@ let list = ref<ProjectsListItem[]>([
     title: "Cosmo Returns",
     id: 3,
     videoPath: "/returns_converted.mp4",
-    stack: "Vue 3 & Ts & Vite",
+    stack: "Vue 3, Ts, Axios, Vite",
     team: "1 FE Dev & 1 BE Dev",
     description: `Cosmo Returns is a user-friendly platform designed to streamline the process of managing returns and complaints for customers. With an intuitive interface, it allows users to easily create, track, and review return requests and complaints, ensuring a smooth resolution process.`,
     active: false,
@@ -102,7 +102,7 @@ let list = ref<ProjectsListItem[]>([
     title: "SOK",
     id: 4,
     videoPath: "/sok_edited_converted.mp4",
-    stack: "Vue 2",
+    stack: "Vue 2, Axios",
     team: "1 FE Dev & 1 BE Dev",
     flow: [
       {
@@ -122,7 +122,7 @@ let list = ref<ProjectsListItem[]>([
     title: "RPG Pizza Legends",
     id: 5,
     videoPath: "/pizza_converted.mp4",
-    stack: "JS & HTML",
+    stack: "JS, HTML",
     team: "Me & my YT tutor :)",
     flow: [
       {
