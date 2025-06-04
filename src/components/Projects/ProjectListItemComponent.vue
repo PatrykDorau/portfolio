@@ -103,10 +103,7 @@ const startCounter = () => {
   clearTimeout(counter);
   counter = setTimeout(() => {
     markItem(true);
-    // Fire your function when the counter reaches 500ms
-    console.log("Counter reached 500ms");
-    // Replace this console.log with your function call
-  }, 400);
+  }, 300);
 };
 
 const clearCounter = () => {

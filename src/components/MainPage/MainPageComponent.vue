@@ -22,7 +22,7 @@
                 <WavyTextComponent text="I'm Patryk." bg-size="80px" bgPos="75%" />
               </div>
               <span class="sl"
-                >I’m dedicated front-end developer passionate about crafting enjoyable and functional web experiences. I'm excited to move forward in my career and embrace new opportunities ahead.</span
+                >I’m dedicated front-end developer. Personally a husband, Bible enjoyer and sport enthusiast. I'm excited to move forward in my career and embrace new opportunities ahead.</span
               >
               <div class="buttons">
                 <div class="arrow__container" @click="scrollTo('2')">
@@ -39,7 +39,13 @@
                     bg-size="60px"
                   />
                 </div>
-                <a href="https://drive.google.com/file/d/17Dx_HKvm1cV8IKt0U4BoOpj3rrzzl-yT/view?usp=drive_link" target="_blank" class="arrow__container"><span class="indicator">→</span><div class="title__wave content" style="background-size: 60px; background-position-x: 333.8px;">Resume</div></a>
+                <a href="https://drive.google.com/file/d/17Dx_HKvm1cV8IKt0U4BoOpj3rrzzl-yT/view?usp=drive_link" target="_blank" class="arrow__container">
+                  <span class="indicator">→</span>
+                  <WavyTextComponent
+                    text="Resume"
+                    bg-size="60px"
+                  />
+                </a>
               </div>
             </p>
           </div>
@@ -54,6 +60,7 @@
         animation="ff"
         :cameraPosition="{ x: 0, y: 0, z: 3 }"
         :modelPosition="{ x: -0, y: 0, z: -2 }"
+        @click="scrollTo('2')"
       />
     </div>
     <div class="bar__info">
