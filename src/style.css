@@ -11,6 +11,11 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --neumorphic-bg: #212327; /* Slightly lighter than pure black, similar to your background */
+  --neumorphic-shadow-dark: #101010; /* Darker shade for the "inner" dark shadow */
+  --neumorphic-shadow-light: #0e0c0c; /* Lighter shade for the "inner" light highlight */
+  --neumorphic-icon-color: #a0a0a0;
 }
 
 a {

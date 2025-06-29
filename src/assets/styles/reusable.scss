@@ -1,5 +1,15 @@
+.bg--secondary {
+  background-color: #131414;
+}
+
 .ml_auto {
   margin-left: auto;
+}
+
+.select {
+  -webkit-user-select: all;
+  user-select: all;
+  cursor: copy;
 }
 
 .mobile {

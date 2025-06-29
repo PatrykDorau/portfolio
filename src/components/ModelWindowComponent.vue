@@ -5,12 +5,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch, ref } from "vue";
+import { onMounted, watch, ref, onUnmounted } from "vue";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 
+// --- Component Props ---
 const props = defineProps<{
   canvasClass: string;
   customClass?: string;
@@ -33,30 +34,220 @@ const props = defineProps<{
   resizeMax?: number;
 }>();
 
+// --- Reactive State ---
+const videoControls = defineModel<{
+  status: string;
+  forwards: boolean;
+  backwards: boolean;
+}>("videoControls");
 const animationList = defineModel<string[]>();
+const currentAnimation = ref("");
 
-let currentAnimation = ref("");
+watch(
+  videoControls,
+  (nV) => {
+    if (nV?.status === "pause") {
+      vid.pause();
+    } else if (nV?.status === "play") {
+      vid.play();
+    }
 
-let canvas = document.querySelector(`.${props.canvasClass}`);
-let model: any;
+    if (nV?.forwards) {
+      vid.currentTime = Math.max(0, vid.currentTime + 5);
+      nV.forwards = false;
+    } else if (nV?.backwards) {
+      vid.currentTime = Math.max(0, vid.currentTime - 5);
+      nV.backwards = false;
+    }
+  },
+  {
+    deep: true,
+  }
+);
 
-let vid = document.createElement("video");
-let loader = document.createElement("video");
+// --- Three.js Variables (Declared at top scope for component-wide access and cleanup) ---
+let canvas: HTMLCanvasElement | null = null;
+let modelContainer: HTMLElement | null = null;
+let scene: THREE.Scene | null = null;
+let camera: THREE.PerspectiveCamera | null = null;
+let renderer: THREE.WebGLRenderer | null = null;
+let controls: OrbitControls | null = null;
+let model: THREE.Object3D | null = null;
+let animationFrameId: number | null = null;
 
-loader.src = "loader.mp4";
-loader.muted = true;
-loader.autoplay = true;
-loader.loop = true;
-loader.play();
+// New state for animation:
+let isReturningToDefault = false; // Flag to indicate if the model should animate back
+const animationFactor = 0.05; // Lerp interpolation factor (0 to 1, higher means faster)
 
-if (props.videoSrc) {
-  console.log(props.videoSrc);
-  vid.src = props.videoSrc;
+// Define target rotations and positions for easier use in lerp
+const targetModelRotation = new THREE.Euler(0, 0, 0); // Default rotations
+let targetModelPosition: THREE.Vector3;
+let targetCameraPosition: THREE.Vector3;
+
+// --- Video Elements & Textures ---
+const vid = document.createElement("video");
+const loader = document.createElement("video");
+
+let loaderTexture: THREE.VideoTexture | null = null;
+let vidTexture: THREE.VideoTexture | null = null;
+
+// --- Utility Functions ---
+
+/**
+ * Initializes and configures the video elements (hidden, muted, autoplay, loop).
+ * Appends them to the body so they can load and play.
+ */
+const setupVideoElements = () => {
+  // Loader video setup
+  loader.src = "loader.mp4";
+  loader.muted = true;
+  loader.autoplay = true;
+  loader.loop = true;
+  loader.playsInline = true; // Important for mobile browsers
+  loader.style.display = "none"; // Hide the video element
+  document.body.appendChild(loader);
+
+  // Main video setup
+  if (props.videoSrc) {
+    vid.src = props.videoSrc;
+  }
   vid.muted = true;
   vid.autoplay = true;
   vid.loop = true;
-  vid.play();
-}
+  vid.playsInline = true; // Important for mobile browsers
+  vid.style.display = "none"; // Hide the video element
+  document.body.appendChild(vid);
+
+  // Attempt to play them. These will resolve if allowed, or catch errors.
+  loader
+    .play()
+    .catch((e) => console.error("Error playing initial loader video:", e));
+  if (props.videoSrc) {
+    vid
+      .play()
+      .catch((e) => console.error("Error playing initial main video:", e));
+  }
+};
+
+/**
+ * Updates the Three.js canvas and camera based on container size.
+ */
+const handleResize = () => {
+  if (!modelContainer || !camera || !renderer) {
+    console.warn("Resize aborted: Three.js elements not ready.");
+    return;
+  }
+
+  let width = modelContainer.clientWidth;
+  let height = modelContainer.clientHeight;
+
+  if (props.resizeMax) {
+    width = Math.min(width, props.resizeMax);
+    height = Math.min(height, props.resizeMax);
+  }
+
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(width, height);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+};
+
+/**
+ * Applies the correct video texture to the model's screen mesh.
+ * @param texture The THREE.VideoTexture to apply.
+ */
+const applyScreenTexture = (texture: THREE.VideoTexture) => {
+  if (!model) return;
+
+  model.traverse((el: any) => {
+    if (el.isMesh && el.name === "uploads_files_629424_mpm_F20_9") {
+      if (!el.material) {
+        el.material = new THREE.MeshBasicMaterial();
+      }
+      el.material.map = texture;
+      el.material.reflectivity = 0;
+      el.material.needsUpdate = true;
+    }
+  });
+};
+
+/**
+ * Handles updates to props.videoSrc, switching the screen texture.
+ */
+const updateVideoTextureOnModel = () => {
+  if (props.canvasClass !== "tablet") {
+    return;
+  }
+
+  if (vidTexture) {
+    vidTexture.dispose();
+    vidTexture = null;
+  }
+
+  if (loaderTexture) {
+    applyScreenTexture(loaderTexture);
+    loader
+      .play()
+      .catch((e) => console.error("Error playing loader video on update:", e));
+  }
+
+  if (props.videoSrc) {
+    vid.src = props.videoSrc;
+    vid.load();
+    vid.onloadeddata = () => {
+      vidTexture = new THREE.VideoTexture(vid);
+      vidTexture.colorSpace = THREE.SRGBColorSpace;
+      vidTexture.wrapS = THREE.RepeatWrapping;
+      vidTexture.minFilter = THREE.LinearFilter;
+      vidTexture.magFilter = THREE.LinearFilter;
+      vidTexture.repeat.x = -1;
+      vidTexture.offset.x = 1;
+      vidTexture.generateMipmaps = true;
+      vidTexture.offset.set(-0.008, 0.008);
+      vid.playbackRate = 0.85;
+
+      applyScreenTexture(vidTexture);
+
+      loader.pause();
+      loader.currentTime = 0;
+      setTimeout(() => {
+        vid
+          .play()
+          .catch((e) =>
+            console.error("Error playing main video after texture update:", e)
+          );
+      }, 100);
+    };
+    vid.onerror = (e) => {
+      console.error("Error loading main video:", e);
+      if (loaderTexture) {
+        applyScreenTexture(loaderTexture);
+        loader
+          .play()
+          .catch((e) =>
+            console.error(
+              "Error playing loader video after main video load error:",
+              e
+            )
+          );
+      }
+    };
+  } else {
+    if (loaderTexture) {
+      applyScreenTexture(loaderTexture);
+      loader
+        .play()
+        .catch((e) =>
+          console.error("Error playing loader video when videoSrc is null:", e)
+        );
+    }
+    vid.pause();
+    vid.currentTime = 0;
+  }
+};
+
+// --- Watchers ---
 
 watch(
   animationList,
@@ -75,453 +266,65 @@ watch(
   { deep: true }
 );
 
-/**
- * Textures
- */
+watch(() => props.videoSrc, updateVideoTextureOnModel, { immediate: true });
 
-let loaderTexture = new THREE.VideoTexture(loader);
-let vidTexture = new THREE.VideoTexture(vid);
-
-vidTexture.colorSpace = THREE.SRGBColorSpace;
-vidTexture.minFilter = THREE.LinearFilter;
-vidTexture.magFilter = THREE.LinearFilter;
-vidTexture.generateMipmaps = true;
-
-watch(
-  () => props.videoSrc,
-  () => {
-    if (props.canvasClass === "tablet" && props.videoSrc) {
-      vidTexture.dispose();
-
-      const aspectRatio = loader.videoWidth / loader.videoHeight;
-      loaderTexture.repeat.set(1, aspectRatio);
-      loaderTexture.offset.set(0, (1 - aspectRatio) / 2);
-
-      model.children[0].traverse((el: any) => {
-        if (el.name === "uploads_files_629424_mpm_F20_9") {
-          const mat = new THREE.MeshBasicMaterial({
-            map: loaderTexture,
-          });
-          mat.reflectivity = 0;
-          el.material = mat;
-        }
-      });
-
-      vid.src = props.videoSrc;
-      vid.muted = true;
-      vid.autoplay = true;
-      vid.loop = true;
-
-      vid.onloadeddata = () => {
-        // Wait for show animation to play
-        vidTexture = new THREE.VideoTexture(vid);
-        vidTexture.colorSpace = THREE.SRGBColorSpace;
-        vidTexture.wrapS = THREE.RepeatWrapping;
-        vidTexture.minFilter = THREE.LinearFilter;
-        vidTexture.magFilter = THREE.LinearFilter;
-        vidTexture.repeat.x = -1;
-
-        model.children[0].traverse((el: any) => {
-          if (el.name === "uploads_files_629424_mpm_F20_9") {
-            const mat = new THREE.MeshBasicMaterial({
-              map: vidTexture,
-            });
-            mat.reflectivity = 0;
-            el.material = mat;
-          }
-        });
-        setTimeout(() => {
-          vid.play();
-        }, 500);
-      };
-    }
-  }
-);
+// --- Lifecycle Hooks ---
 
 onMounted(() => {
-  canvas = document.querySelector(`.${props.canvasClass}`);
-  const modelContainer = document.querySelector(`.${props.containerClass}`);
+  canvas = document.querySelector(`.${props.canvasClass}`) as HTMLCanvasElement;
+  modelContainer = document.querySelector(
+    `.${props.customClass}`
+  ) as HTMLElement;
 
-  if (canvas !== null && modelContainer !== null) {
-    // Scene
-    const scene = new THREE.Scene();
-
-    /**
-     * Loaders
-     */
-    // GLTF loader
-    const gltfLoader = new GLTFLoader();
-
-    // Draco loader
-    const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath("draco/");
-    gltfLoader.setDRACOLoader(dracoLoader);
-
-    /**
-     * Object
-     */
-
-    const light = new THREE.AmbientLight("#fdfbd3", 15); // soft white light
-    scene.add(light);
-
-    /**
-     * Sizes
-     */
-    const sizes = {
-      width: modelContainer.clientWidth,
-      height: modelContainer.clientHeight,
-      modelRatio: 9 / 16,
-    };
-
-    window.addEventListener("resize", () => {
-      // Update sizes
-      if (props.resizeMax) {
-        sizes.width =
-          modelContainer.clientWidth > props.resizeMax
-            ? props.resizeMax
-            : modelContainer.clientWidth;
-        sizes.height =
-          modelContainer.clientHeight > props.resizeMax
-            ? props.resizeMax
-            : modelContainer.clientHeight;
-      } else {
-        sizes.width = modelContainer.clientWidth;
-        sizes.height = modelContainer.clientHeight;
-      }
-
-      // Update camera
-      camera.aspect = sizes.width / sizes.height;
-
-      camera.updateProjectionMatrix();
-
-      // Update renderer
-      renderer.setSize(sizes.width, sizes.height);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    });
-
-    /**
-     * Camera
-     */
-    // Base camera
-    const camera = new THREE.PerspectiveCamera(
-      window.innerWidth < 958 ? 60 : 50,
-      sizes.width / sizes.height,
-      0.01,
-      1000
+  if (
+    !canvas ||
+    !modelContainer ||
+    modelContainer.clientWidth === 0 ||
+    modelContainer.clientHeight === 0
+  ) {
+    console.error(
+      "Three.js initialization failed: Canvas or model container not found or has zero dimensions. Check your CSS and selectors."
     );
-    camera.position.x = props.cameraPosition.x;
-    camera.position.y = props.cameraPosition.y;
-    camera.position.z = props.cameraPosition.z;
-    scene.add(camera);
-
-    gltfLoader.load(`${props.modelPath}`, (gltf) => {
-      // uploads_files_629424_mpm_F20_9
-      model = gltf.scene;
-
-      gltf.scene.position.x = props.modelPosition.x;
-      gltf.scene.position.y = props.modelPosition.y;
-      gltf.scene.position.z = props.modelPosition.z;
-
-      model.children[0].traverse((el: any) => {
-        if (el.name === "uploads_files_629424_mpm_F20_9") {
-          el.material = new THREE.MeshBasicMaterial({
-            map: vidTexture,
-          });
-        } else if (el.name === "Curve") {
-          el.material = new THREE.MeshMatcapMaterial({
-            color: "#B3BFC8",
-          });
-        }
-      });
-      scene.add(gltf.scene);
-    });
-
-    // Controls
-    let controls: OrbitControls;
-    if (props.controls) {
-      controls = new OrbitControls(camera, canvas as HTMLElement);
-      controls.enableDamping = true;
-    }
-
-    /**
-     * Renderer
-     */
-    const renderer = new THREE.WebGLRenderer({
-      canvas: canvas,
-      antialias: true,
-      alpha: true,
-    });
-    renderer.setSize(sizes.width, sizes.height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 0.9;
-    renderer.capabilities.getMaxAnisotropy();
-
-    /**
-     * Animate
-     */
-
-    if (props.animation === "ff") {
-      window.addEventListener("mousemove", (event) => {
-        if (model) {
-          model.rotation.y = (event.clientX / window.innerWidth - 0.5) * 1.3;
-          model.rotation.x = (event.clientY / window.innerHeight - 0.5) / 3;
-
-          camera.rotation.y = (event.clientX / window.innerWidth - 0.5) / 6;
-          camera.rotation.x = (event.clientY / window.innerHeight - 0.5) / 3;
-          camera.rotation.z = (event.clientY / window.innerHeight - 0.5) / 2;
-        }
-      });
-    } else if (props.animation === "tablet") {
-      window.addEventListener("mousemove", (event) => {
-        if (model && window.innerWidth > 768) {
-          model.rotation.x = (event.clientY / window.innerHeight - 0.5) * 0.8;
-          model.rotation.z = -(event.clientX / window.innerWidth - 0.5);
-        }
-      });
-    }
-
-    const tick = () => {
-      // Update controls
-      if (props.controls) {
-        controls.update();
-      }
-
-      // Render
-      renderer.render(scene, camera);
-
-      // Call tick again on the next frame
-      window.requestAnimationFrame(tick);
-    };
-
-    tick();
+    return;
   }
-});
-</script>
 
-<!-- <template>
-  <div :class="[props.containerClass, currentAnimation, props.customClass]">
-    <canvas :class="props.canvasClass"></canvas>
-  </div>
-</template>
+  setupVideoElements();
 
-<script setup lang="ts">
-import { onMounted, watch, ref } from "vue";
-import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+  loaderTexture = new THREE.VideoTexture(loader);
+  loaderTexture.colorSpace = THREE.SRGBColorSpace;
+  loaderTexture.minFilter = THREE.LinearFilter;
+  loaderTexture.magFilter = THREE.LinearFilter;
+  loaderTexture.generateMipmaps = true;
+  loaderTexture.repeat.x = -1;
+  loaderTexture.offset.x = 1;
 
-const props = defineProps<{
-  canvasClass: string;
-  customClass?: string;
-  modelPath: string;
-  containerClass: string;
-  animation: "ff" | "tablet";
-  cameraPosition: { x: number; y: number; z: number };
-  modelPosition: { x: number; y: number; z: number };
-  lockedPreview?: boolean;
-  controls?: boolean;
-  videoSrc?: string;
-  resizeMax?: number;
-}>();
+  vidTexture = new THREE.VideoTexture(vid);
+  vidTexture.colorSpace = THREE.SRGBColorSpace;
+  vidTexture.minFilter = THREE.LinearFilter;
+  vidTexture.magFilter = THREE.LinearFilter;
+  vidTexture.generateMipmaps = true;
+  vidTexture.repeat.x = -1;
+  vidTexture.offset.x = 1;
 
-const animationList = defineModel<string[]>();
-const currentAnimation = ref("");
+  // --- Scene Setup ---
+  scene = new THREE.Scene();
+  const light = new THREE.AmbientLight("#fdfbd3", 12);
+  scene.add(light);
 
-let canvas: HTMLCanvasElement | null = null;
-let model: THREE.Group | null = null;
+  // --- Loaders Setup ---
+  const gltfLoader = new GLTFLoader();
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath("/draco/");
+  gltfLoader.setDRACOLoader(dracoLoader);
 
-const loaderVideo = document.createElement("video");
-const userVideo = document.createElement("video");
-
-initVideoElement(loaderVideo, "loader.mp4");
-
-if (props.videoSrc) {
-  initVideoElement(userVideo, props.videoSrc);
-}
-
-const loaderTexture = new THREE.VideoTexture(loaderVideo);
-let vidTexture = new THREE.VideoTexture(userVideo);
-configureVideoTexture(vidTexture);
-
-/**
- * Animation watcher
- */
-watch(
-  animationList,
-  (newValue) => {
-    if (newValue?.length) {
-      currentAnimation.value = props.lockedPreview
-        ? "animation-entry"
-        : newValue[0];
-      animationList.value?.shift();
-    }
-  },
-  { deep: true }
-);
-
-/**
- * Update texture on video source change
- */
-watch(
-  () => props.videoSrc,
-  async (newSrc) => {
-    if (!model || props.canvasClass !== "tablet" || !newSrc) return;
-
-    // Stop and reset the old video
-    userVideo.pause();
-    userVideo.removeAttribute("src");
-    userVideo.load();
-    vidTexture.dispose();
-
-    // Load the new video
-    await new Promise<void>((resolve) => {
-      userVideo.src = newSrc;
-      userVideo.muted = true;
-      userVideo.loop = true;
-
-      userVideo.onloadeddata = () => {
-        resolve();
-      };
-
-      userVideo.load();
-    });
-
-    await userVideo.play().catch(console.warn);
-
-    // Only now we create the new texture
-    vidTexture = new THREE.VideoTexture(userVideo);
-    configureVideoTexture(vidTexture);
-    vidTexture.repeat.x = -1;
-
-    // And update the model material if model is ready
-    updateModelMaterial(
-      "uploads_files_629424_mpm_F20_9",
-      new THREE.MeshBasicMaterial({ map: vidTexture })
-    );
-  }
-);
-
-/**
- * Mount logic
- */
-onMounted(() => {
-  canvas = document.querySelector(`.${props.canvasClass}`);
-  const modelContainer = document.querySelector(`.${props.containerClass}`);
-
-  if (!canvas || !modelContainer) return;
-
-  const scene = new THREE.Scene();
-  scene.add(new THREE.AmbientLight("#fdfbd3", 15));
-
-  const sizes = {
+  // --- Camera Setup ---
+  const initialSizes = {
     width: modelContainer.clientWidth,
     height: modelContainer.clientHeight,
   };
-
-  const camera = createCamera(sizes);
-  scene.add(camera);
-
-  const gltfLoader = new GLTFLoader();
-  const dracoLoader = new DRACOLoader();
-  dracoLoader.setDecoderPath("draco/");
-  gltfLoader.setDRACOLoader(dracoLoader);
-
-  gltfLoader.load(props.modelPath, (gltf) => {
-    model = gltf.scene;
-    model.position.set(
-      props.modelPosition.x,
-      props.modelPosition.y,
-      props.modelPosition.z
-    );
-
-    updateModelMaterial(
-      "uploads_files_629424_mpm_F20_9",
-      new THREE.MeshBasicMaterial({ map: vidTexture })
-    );
-    updateModelMaterial(
-      "Curve",
-      new THREE.MeshMatcapMaterial({ color: "#B3BFC8" })
-    );
-
-    scene.add(model);
-  });
-
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: true,
-    alpha: true,
-  });
-  setupRenderer(renderer, sizes);
-
-  const controls = props.controls ? new OrbitControls(camera, canvas) : null;
-  if (controls) controls.enableDamping = true;
-
-  window.addEventListener("resize", () =>
-    resize(modelContainer, renderer, camera, sizes)
-  );
-
-  setupMouseAnimation(props.animation, camera);
-
-  const animate = () => {
-    controls?.update();
-    renderer.render(scene, camera);
-    requestAnimationFrame(animate);
-  };
-
-  animate();
-});
-
-/**
- * --- Utility Functions ---
- */
-
-function initVideoElement(
-  video: HTMLVideoElement,
-  src: string,
-  callback?: () => void
-) {
-  video.src = src;
-  video.muted = true;
-  video.autoplay = true;
-  video.loop = true;
-
-  const onReady = () => {
-    video.removeEventListener("loadeddata", onReady);
-    video.play().catch(console.warn);
-    callback?.();
-  };
-
-  if (video.readyState >= 2) {
-    video.play().catch(console.warn);
-    callback?.();
-  } else {
-    video.addEventListener("loadeddata", onReady);
-    video.load();
-  }
-}
-
-function configureVideoTexture(tex: THREE.VideoTexture) {
-  tex.colorSpace = THREE.SRGBColorSpace;
-  tex.minFilter = THREE.LinearFilter;
-  tex.magFilter = THREE.LinearFilter;
-  tex.generateMipmaps = true;
-}
-
-function updateModelMaterial(name: string, material: THREE.Material) {
-  model?.children[0]?.traverse((el: any) => {
-    if (el.name === name) {
-      el.material = material;
-    }
-  });
-}
-
-function createCamera(sizes: { width: number; height: number }) {
-  const fov = window.innerWidth < 958 ? 60 : 50;
-  const camera = new THREE.PerspectiveCamera(
-    fov,
-    sizes.width / sizes.height,
+  camera = new THREE.PerspectiveCamera(
+    window.innerWidth < 958 ? 60 : 50,
+    initialSizes.width / initialSizes.height,
     0.01,
     1000
   );
@@ -530,54 +333,258 @@ function createCamera(sizes: { width: number; height: number }) {
     props.cameraPosition.y,
     props.cameraPosition.z
   );
-  return camera;
-}
+  scene.add(camera);
 
-function setupRenderer(
-  renderer: THREE.WebGLRenderer,
-  sizes: { width: number; height: number }
-) {
-  renderer.setSize(sizes.width, sizes.height);
+  // Initialize target positions
+  targetModelPosition = new THREE.Vector3(
+    props.modelPosition.x,
+    props.modelPosition.y,
+    props.modelPosition.z
+  );
+  targetCameraPosition = new THREE.Vector3(
+    props.cameraPosition.x,
+    props.cameraPosition.y,
+    props.cameraPosition.z
+  );
+
+  // --- Renderer Setup ---
+  renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    antialias: true,
+    alpha: true,
+  });
+  renderer.setSize(initialSizes.width, initialSizes.height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 0.9;
-}
 
-function resize(
-  container: Element,
-  renderer: THREE.WebGLRenderer,
-  camera: THREE.PerspectiveCamera,
-  sizes: { width: number; height: number }
-) {
-  const max = props.resizeMax ?? Infinity;
-  sizes.width = Math.min(container.clientWidth, max);
-  sizes.height = Math.min(container.clientHeight, max);
+  // --- Model Loading ---
+  gltfLoader.load(props.modelPath, (gltf) => {
+    model = gltf.scene;
 
-  camera.aspect = sizes.width / sizes.height;
-  camera.updateProjectionMatrix();
+    console.log(model)
 
-  renderer.setSize(sizes.width, sizes.height);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-}
+    model.position.set(
+      props.modelPosition.x,
+      props.modelPosition.y,
+      props.modelPosition.z
+    );
+    // Initial rotation should also be 0,0,0 or whatever default you want
+    model.rotation.set(0, 0, 0);
 
-function setupMouseAnimation(type: string, camera: THREE.PerspectiveCamera) {
-  window.addEventListener("mousemove", (event) => {
-    if (!model) return;
-
-    const x = event.clientX / window.innerWidth - 0.5;
-    const y = event.clientY / window.innerHeight - 0.5;
-
-    if (type === "ff") {
-      model.rotation.y = x * 1.3;
-      model.rotation.x = y / 3;
-
-      camera.rotation.y = x / 6;
-      camera.rotation.x = y / 3;
-      camera.rotation.z = y / 2;
-    } else if (type === "tablet" && window.innerWidth > 768) {
-      model.rotation.x = y * 0.8;
-      model.rotation.z = -x;
-    }
+    model.traverse((el: any) => {
+      if (el.isMesh) {
+        if (el.name === "uploads_files_629424_mpm_F20_9") {
+          el.material = new THREE.MeshBasicMaterial({
+            map: props.videoSrc && vidTexture ? vidTexture : loaderTexture,
+          });
+          el.material.reflectivity = 0;
+        } else if (el.name === "Curve") {
+          el.material = new THREE.MeshMatcapMaterial({
+            color: "#B3BFC8",
+          });
+        }
+      }
+    });
+    scene!.add(model);
   });
-}
-</script> -->
+
+  // --- Controls Setup ---
+  if (props.controls) {
+    controls = new OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.enableRotate = false; // Keep rotation disabled if that's your intention
+
+    // --- Changes for Subtle Zoom ---
+    controls.enableZoom = false; // Ensure zoom is enabled (it's true by default, but good to be explicit)
+  }
+
+  // --- Event Listeners ---
+  window.addEventListener("resize", handleResize);
+
+  if (props.animation === "ff") {
+    const handleFFMouseMove = (event: MouseEvent) => {
+      if (model && camera) {
+        model.rotation.y = (event.clientX / window.innerWidth - 0.5) * 1.3;
+        model.rotation.x = (event.clientY / window.innerHeight - 0.5) / 3;
+
+        camera.rotation.y = (event.clientX / window.innerWidth - 0.5) / 6;
+        camera.rotation.x = (event.clientY / window.innerHeight - 0.5) / 3;
+        camera.rotation.z = (event.clientY / window.innerHeight - 0.5) / 2;
+      }
+    };
+    window.addEventListener("mousemove", handleFFMouseMove);
+    (window as any)._handleFFMouseMove = handleFFMouseMove;
+  } else if (props.animation === "tablet") {
+    const handleTabletMouseMove = (event: MouseEvent) => {
+      isReturningToDefault = false; // Stop return animation on mouse movement
+      if (model && window.innerWidth > 768 && modelContainer) {
+        // Use offsetX and offsetY relative to the event target (modelContainer)
+        const normalizedX = event.offsetX / modelContainer.clientWidth - 0.5;
+        const normalizedY = event.offsetY / modelContainer.clientHeight - 0.5;
+
+        model.rotation.x = normalizedY * 0.4;
+        model.rotation.z = -normalizedX * 0.4;
+      }
+    };
+
+    const handleTabletMouseLeave = () => {
+      if (!model || !camera) return;
+      console.log("Mouse left model container, returning to default.");
+      isReturningToDefault = true; // Start return animation
+    };
+
+    if (modelContainer) {
+      console.dir(modelContainer);
+      modelContainer.addEventListener("mousemove", handleTabletMouseMove);
+      (modelContainer as any)._handleTabletMouseMove = handleTabletMouseMove;
+
+      modelContainer.addEventListener("mouseleave", handleTabletMouseLeave);
+      (modelContainer as any)._handleTabletMouseLeave = handleTabletMouseLeave;
+    }
+  }
+
+  // --- Animation Loop ---
+  const animate = () => {
+    if (!renderer || !scene || !camera) {
+      console.warn("Animation loop skipped: Three.js elements not ready.");
+      return;
+    }
+
+    if (isReturningToDefault && model && camera) {
+      // Lerp model rotation back to default (0, 0, 0)
+      // Use Three.js's built-in lerp functions for Vectors/Eulers
+      model.rotation.x = THREE.MathUtils.lerp(
+        model.rotation.x,
+        targetModelRotation.x,
+        animationFactor
+      );
+      model.rotation.y = THREE.MathUtils.lerp(
+        model.rotation.y,
+        targetModelRotation.y,
+        animationFactor
+      );
+      model.rotation.z = THREE.MathUtils.lerp(
+        model.rotation.z,
+        targetModelRotation.z,
+        animationFactor
+      );
+
+      // Lerp model position back to props.modelPosition
+      model.position.lerp(targetModelPosition, animationFactor);
+
+      // Lerp camera position back to props.cameraPosition
+      camera.position.lerp(targetCameraPosition, animationFactor);
+
+      // --- Stopping Condition ---
+      const rotationThreshold = 0.0001; // radians, very small to ensure it gets close
+      const positionThreshold = 0.001; // units
+
+      const modelRotationNearTarget =
+        Math.abs(model.rotation.x - targetModelRotation.x) <
+          rotationThreshold &&
+        Math.abs(model.rotation.y - targetModelRotation.y) <
+          rotationThreshold &&
+        Math.abs(model.rotation.z - targetModelRotation.z) < rotationThreshold;
+
+      const modelPositionNearTarget =
+        model.position.distanceTo(targetModelPosition) < positionThreshold;
+
+      const cameraPositionNearTarget =
+        camera.position.distanceTo(targetCameraPosition) < positionThreshold;
+
+      if (
+        modelRotationNearTarget &&
+        modelPositionNearTarget &&
+        cameraPositionNearTarget
+      ) {
+        isReturningToDefault = false;
+        // Snap to exact values to prevent floating point inaccuracies
+        if (model) {
+          model.rotation.copy(targetModelRotation); // Use copy for Euler
+          model.position.copy(targetModelPosition); // Use copy for Vector3
+        }
+        if (camera) {
+          camera.position.copy(targetCameraPosition); // Use copy for Vector3
+        }
+      }
+    }
+
+    if (controls) {
+      controls.update();
+    }
+
+    renderer.render(scene, camera);
+    animationFrameId = window.requestAnimationFrame(animate);
+  };
+
+  animate();
+});
+
+onUnmounted(() => {
+  if (animationFrameId) {
+    window.cancelAnimationFrame(animationFrameId);
+  }
+
+  window.removeEventListener("resize", handleResize);
+
+  if ((window as any)._handleFFMouseMove) {
+    window.removeEventListener("mousemove", (window as any)._handleFFMouseMove);
+  }
+  if (modelContainer && (modelContainer as any)._handleTabletMouseMove) {
+    modelContainer.removeEventListener(
+      "mousemove",
+      (modelContainer as any)._handleTabletMouseMove
+    );
+  }
+  if (modelContainer && (modelContainer as any)._handleTabletMouseLeave) {
+    modelContainer.removeEventListener(
+      "mouseleave",
+      (modelContainer as any)._handleTabletMouseLeave
+    );
+  }
+
+  if (scene) {
+    scene.traverse((object) => {
+      if ((object as THREE.Mesh).isMesh) {
+        (object as THREE.Mesh).geometry.dispose();
+        if (Array.isArray((object as THREE.Mesh).material)) {
+          ((object as THREE.Mesh).material as THREE.Material[]).forEach(
+            (material) => material.dispose()
+          );
+        } else if ((object as THREE.Mesh).material) {
+          ((object as THREE.Mesh).material as THREE.Material).dispose();
+        }
+      }
+    });
+    scene.clear();
+  }
+
+  if (renderer) {
+    renderer.dispose();
+    if (canvas && canvas.parentNode) {
+      canvas.parentNode.removeChild(canvas);
+    }
+  }
+
+  if (controls) {
+    controls.dispose();
+  }
+
+  if (vidTexture) vidTexture.dispose();
+  if (loaderTexture) loaderTexture.dispose();
+
+  if (vid && vid.parentNode) {
+    vid.pause();
+    vid.removeAttribute("src");
+    vid.load();
+    vid.parentNode.removeChild(vid);
+  }
+  if (loader && loader.parentNode) {
+    loader.pause();
+    loader.removeAttribute("src");
+    loader.load();
+    loader.parentNode.removeChild(loader);
+  }
+});
+</script>

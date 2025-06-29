@@ -1,19 +1,20 @@
 .main_page {
-  position: relative;
   z-index: 2;
   margin-block: auto;
-  height: calc(100dvh - 25px);
+  // height: calc(100dvh - 25px);
+  min-height: 70dvh;
   box-sizing: border-box;
-  animation: fadeInBlur 2s ease-in-out forwards;
-  scroll-snap-align: start;
+
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-
-  @media (max-width: 768px) {
-    height: auto;
-    scroll-snap-align: none;
-  }
+  justify-content: center;
+  align-items: center;
+  padding: 100px 50px 25px;
+  gap: 20px;
+  background-color: #0d0e0e !important;
+  overflow: hidden;
+  position: sticky;
+  top: -45px;
 
   .title {
     display: flex;
@@ -178,6 +179,7 @@
     display: flex;
     gap: 25px;
     justify-content: space-between;
+    border-top: 1px solid black;
 
     @media (max-width: 768px) {
       margin-bottom: 50px;

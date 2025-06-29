@@ -1,131 +1,192 @@
 <template>
   <div
     class="list_item"
-    :class="[{ disabled: disableHover }, { active: currentActive }]"
+    :class="[
+      { 'is-visible': isVisible }, // Use 'is-visible' for consistency and clarity
+    ]"
     :data-indicator="props.data.id"
-    @mouseover="activate"
-    @mouseleave="deactivate"
+    ref="projectItemRef"
   >
-    <div class="item_text_wrapper">
-      <div class="item_title" :data-indicator="props.data.id">
-        <p class="content">
-          {{ props.data.title }}
-          <span class="lock_info" @click="handlePreviewLock">
-            {{ lockedPreview ? "Unlock Preview" : "Lock Preview" }}
+    <div class="item__model">
+      <ModelWindowComponent
+        v-model:video-controls="videoControls"
+        :custom-class="`tablet_container--${props.data.id}`"
+        :canvas-class="`tablet-${props.data.id}`"
+        container-class="tablet-container"
+        animation="tablet"
+        modelPath="tablet1.glb"
+        :controls="true"
+        :cameraPosition="{ x: 0, y: 3.7, z: 0 }"
+        :modelPosition="{ x: 0, y: 1, z: 0 }"
+        :videoSrc="props.data.videoPath"
+      />
+
+      <div class="model_overlay">
+        <div class="controls">
+          <motion.div
+            class="control control--backwards"
+            :whilePress="{ scale: 2 }"
+            :transition="{ duration: 0.1 }"
+            @click="
+              () => {
+                setVideoFrames('backwards');
+                toggleClass('control--backwards', 'scaling');
+              }
+            "
+          >
             <img
-              width="20"
-              height="20"
-              src="https://img.icons8.com/hatch/64/lock-2.png"
-              alt="lock-2"
+              src="/controls/icons8-double-left-24.png"
+              alt="Move project video 15 seconds backwards"
             />
-          </span>
-          <span @click="markItem(!showPreview, true)" class="show_preview">
-            Show Preview
-          </span>
-        </p>
-      </div>
-      <div class="item_text">
-        <div class="item_desc">
-          <div class="item_info">
-            <div class="info_col">
-              <p class="col_title">Stack</p>
-              <p>
-                {{ props.data.stack }}
-              </p>
-            </div>
-            <div class="info_col">
-              <p class="col_title">Team</p>
-              <p>
-                {{ props.data.team }}
-              </p>
-            </div>
-            <div class="info_col">
-              <p class="col_title">Year</p>
-              <p>{{ props.data.year }}</p>
-            </div>
-          </div>
-          <p class="desc_content">{{ props.data.description }}</p>
-          <div v-if="props.data.flow" class="flow">
-            <p
-              class="flow_item"
-              v-for="item in props.data.flow"
-              :key="item.title"
-            >
-              <strong>{{ item.title }}:</strong> {{ item.text }}
-            </p>
-          </div>
+          </motion.div>
+          <motion.div
+            class="control control--status"
+            :whilePress="{ scale: 2 }"
+            :transition="{ duration: 0.1 }"
+            @click="
+              () => {
+                setVideoFrames('status');
+                toggleClass('control--status', 'scaling');
+              }
+            "
+          >
+            <img
+              v-if="videoControls.status === 'pause'"
+              src="/controls/icons8-play-32.png"
+              alt="Start project video icon"
+            />
+            <img
+              v-else
+              src="/controls/icons8-pause-32.png"
+              alt="Pause project video icon"
+            />
+          </motion.div>
+          <motion.div
+            class="control control--forwards"
+            :whilePress="{ scale: 2 }"
+            :transition="{ duration: 0.1 }"
+            @click="
+              () => {
+                setVideoFrames('forwards');
+                toggleClass('control--forwards', 'scaling');
+              }
+            "
+          >
+            <img
+              class="rotate180"
+              src="/controls/icons8-double-left-24.png"
+              alt="Move project video 15 seconds forwards"
+            />
+          </motion.div>
         </div>
       </div>
+    </div>
+
+    <div class="item_content">
+      <div class="tags">
+        <div class="tag" v-for="tag in props.data.categories">
+          {{ tag }}
+        </div>
+      </div>
+      <div class="item_title" :data-indicator="props.data.id">
+        <p class="content">{{ props.data.title }}</p>
+        <p>{{ props.data.year }}</p>
+      </div>
+      <button
+        v-if="props.data.caseStudy"
+        @click="routerTo(`/study/${props.data.id}`)"
+        type="button"
+        class="case-study"
+      >
+        Case study
+      </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from "vue";
-import { ProjectItemData } from "../../types/OtherTypes";
-const props = defineProps<ProjectItemData>();
+import { ref, onMounted, onUnmounted } from "vue";
+import { Project } from "../../types/ProjectTypes";
+import ModelWindowComponent from "../../components/ModelWindowComponent.vue";
+import { useToggleClass } from "../../composables/useToggleClass";
+import { useProjectsStore } from "../../stores/caseStudyStore";
+import { useRouter } from "vue-router";
+import { motion } from "motion-v";
 
-const currentActive = ref(false);
+const pStore = useProjectsStore();
 
-let active = defineModel<boolean>("active");
-let lockedPreview = defineModel<boolean>("lockedPreview");
+const router = useRouter();
 
-let counter = 0;
-let showPreview = ref(false);
+const props = defineProps<{ data: Project }>();
 
-watch(
-  () => lockedPreview.value,
-  (newVal) => {
-    if (!newVal) {
-      currentActive.value = false;
-    }
-  }
-);
+const { toggleClass } = useToggleClass();
 
-const disableHover = computed(() => {
-  if (lockedPreview.value && !active.value) return true;
-  else return false;
+const videoControls = ref({
+  playbackRate: 0.85,
+  forwards: false,
+  backwards: false,
+  status: "play",
 });
 
-const handlePreviewLock = () => {
-  lockedPreview.value = !lockedPreview.value;
-  currentActive.value = !currentActive.value;
-};
-const activate = () => {
-  startCounter();
-};
-const deactivate = () => {
-  if (lockedPreview.value) return;
-  clearCounter();
-};
-
-const startCounter = () => {
-  clearTimeout(counter);
-  counter = setTimeout(() => {
-    markItem(true);
-  }, 300);
-};
-
-const clearCounter = () => {
-  clearTimeout(counter);
-  markItem(false);
-};
-
-const markItem = (type: boolean, force?: boolean) => {
-  if (force) {
-    active.value = type;
-    setTimeout(() => {
-      window.addEventListener(
-        "click",
-        () => {
-          active.value = false;
-          showPreview.value = false;
-        },
-        { once: true }
-      );
-    }, 500);
-    return;
+const setVideoFrames = (type: "forwards" | "backwards" | "status") => {
+  if (type === "status") {
+    if (videoControls.value.status === "play") {
+      videoControls.value.status = "pause";
+    } else {
+      videoControls.value.status = "play";
+    }
   }
-  if (window.innerWidth > 768) active.value = type;
+  if (type === "forwards") {
+    videoControls.value.forwards = true;
+  }
+  if (type === "backwards") {
+    videoControls.value.backwards = true;
+  }
 };
+
+const routerTo = async (to: string) => {
+  pStore.currentCaseStudy = props.data.id;
+
+  console.log(to);
+
+  router.push({ path: to });
+};
+
+const isVisible = ref(false);
+
+const projectItemRef = ref<HTMLElement | null>(null);
+let observer: IntersectionObserver | null = null;
+
+// Declare tabletContainer outside moveTabletWithCursor to avoid re-querying on every mouse move
+let tabletContainer: HTMLDivElement | null = null;
+
+onMounted(() => {
+  if (projectItemRef.value) {
+    observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            isVisible.value = true;
+            observer?.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(projectItemRef.value);
+  }
+  // Initialize tabletContainer here once
+  tabletContainer = document.querySelector(
+    ".tablet-container"
+  ) as HTMLDivElement;
+  if (!tabletContainer) {
+    console.warn("'.tablet-container' element not found on mount!");
+  }
+});
+
+onUnmounted(() => {
+  if (observer) {
+    observer.disconnect();
+  }
+});
 </script>

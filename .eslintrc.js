@@ -31,5 +31,7 @@ module.exports = {
     // Add your own rules here to override ones from the extended configs.
     "vue/no-setup-props-destructure": "off",
     "import/named": 0,
+    indent: "off",
+    "@typescript-eslint/indent": ["error"],
   },
 };

@@ -23,11 +23,12 @@ type ProjectsListItem = {
   id: number;
   videoPath: string;
   year: string;
-  stack: string;
-  team: string;
+  stack: string[];
+  team: string[];
   description: string;
   active: boolean;
   flow?: Flow[];
+  categories?: string[];
 };
 
 type Flow = {

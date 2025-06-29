@@ -1,257 +1,40 @@
 <template>
-  <div
-    class="nav"
-    :class="[
-      {
-        open: navToggled,
-      },
-      {
-        close: closeState,
-      },
-    ]"
-  >
-    <div @click="toggleNav" class="nav__top">
+  <nav class="nav__menu" :class="{ hide: props.hideNav }">
+    <div class="logo">
       <svg
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 48 48"
-        width="48"
-        height="48"
-        class="icons-style"
+        height="40"
+        viewBox="-1.6800000667572021 16.239999771118164 24.440000534057617 43.320003509521484"
       >
-        <title>Menu</title>
-        <circle
-          cx="12"
-          cy="12"
-          r="3"
-          opacity="1"
-          transform-origin="0px 0px"
-          style="transform: none; transform-origin: 0px 0px"
-        ></circle>
-        <circle
-          cx="24"
-          cy="12"
-          r="3"
-          opacity="1"
-          transform-origin="0px 0px"
-          style="transform: none; transform-origin: 0px 0px"
-        ></circle>
-        <circle
-          cx="36"
-          cy="12"
-          r="3"
-          opacity="1"
-          transform-origin="0px 0px"
-          style="transform: none; transform-origin: 0px 0px"
-        ></circle>
-        <circle
-          cx="36"
-          cy="24"
-          r="3"
-          opacity="1"
-          transform-origin="0px 0px"
-          style="transform: none; transform-origin: 0px 0px"
-        ></circle>
-        <circle
-          cx="36"
-          cy="36"
-          r="3"
-          opacity="1"
-          transform-origin="0px 0px"
-          style="transform: none; transform-origin: 0px 0px"
-        ></circle>
-        <circle
-          cx="24"
-          cy="36"
-          r="3"
-          opacity="1"
-          transform-origin="0px 0px"
-          style="transform: none; transform-origin: 0px 0px"
-        ></circle>
-        <circle
-          cx="12"
-          cy="36"
-          r="3"
-          opacity="1"
-          transform-origin="0px 0px"
-          style="transform: none; transform-origin: 0px 0px"
-        ></circle>
-        <circle
-          cx="12"
-          cy="24"
-          r="3"
-          opacity="1"
-          transform-origin="0px 0px"
-          style="transform: none; transform-origin: 0px 0px"
-        ></circle>
-        <rect
-          x="21"
-          y="21"
-          width="6px"
-          height="6px"
-          rx="3"
-          ry="3"
-          opacity="0.75"
-          transform-origin="0px 0px"
-          style="transform: none; transform-origin: 0px 0px"
-        ></rect>
-        <rect
-          x="21"
-          y="21"
-          width="6px"
-          height="6px"
-          rx="3"
-          ry="3"
-          opacity="0.75"
-          transform-origin="0px 0px"
-          style="transform: none; transform-origin: 0px 0px"
-        ></rect>
+        <motion.path
+          pathLength="1"
+          :initial="{ pathLength: 0 }"
+          :animate="{ pathLength: 0.6 }"
+          :transition="{ duration: 4, delay: 0.5 }"
+          stroke="white"
+          stroke-width="0.5"
+          fill="none"
+          d="M2 35.12L0.68 35.28Q1.52 36.92 1.96 39.64L1.96 39.64Q2 37.32 2 35.12L2 35.12ZM11.08 35.20L9.96 36.32Q7.28 38.40 3.08 40.48L3.08 40.48Q2.92 47.16 2.36 58.44L2.36 58.44L1.24 59.56Q1.20 58.40 1.32 54.74Q1.44 51.08 1.38 47.62Q1.32 44.16 0.96 41.52L0.96 41.52L-1.68 42.76L-0.56 41.64L0.88 40.96Q0.28 37.20-1.04 35.44L-1.04 35.44L0.08 34.32L2 34.12Q2 29.20 1.64 28.20L1.64 28.20Q1.52 27.92 1.28 27.64L1.28 27.64L0.68 28.24L0.56 26.88L1.68 25.76Q1.80 25.92 2.06 26.16Q2.32 26.40 2.50 26.62Q2.68 26.84 2.76 27.08L2.76 27.08Q3.08 28 3.12 33.08L3.12 33.08L3.12 34Q10.40 33.20 11.08 34.20L11.08 34.20Q11.16 34.32 11.16 34.48Q11.16 34.64 11.12 34.86Q11.08 35.08 11.08 35.20L11.08 35.20ZM10 36L10 36Q10.08 35.52 9.96 35.32L9.96 35.32Q9.32 34.40 3.12 35L3.12 35Q3.12 37.36 3.08 39.92L3.08 39.92Q7.44 37.80 10 36ZM21.64 17.56L21.64 17.56Q17.80 22.72 15.48 34.56L15.48 34.56Q18.24 30.36 19.92 25.98Q21.60 21.60 21.64 17.56ZM15.96 38.60L14.84 39.72Q15.08 39.32 16.36 37.68Q17.64 36.04 18 35.08L18 35.08Q18.60 33.40 15.92 34.80L15.92 34.80Q15.72 34.92 15.48 35.08L15.48 35.08L15.36 35.24Q13.80 43.40 13.32 51.96L13.32 51.96L12.20 53.08Q12.64 44.80 14.12 36.84L14.12 36.84Q12.76 38.60 11.28 40.12L11.28 40.12L10.16 41.24Q7.48 41.92 9.36 39.76L9.36 39.76Q9.72 39.36 10.48 38.60L10.48 38.60L10.84 38.24Q8.40 40.80 11.16 40.16L11.16 40.16Q12.76 38.36 14.24 36.36L14.24 36.36L14.32 35.76Q12.16 37.16 10.84 38.24L10.84 38.24L11.96 37.12Q12.72 36.48 14.44 35.32L14.44 35.32Q17.08 22 21.64 17.36L21.64 17.36L22.76 16.24Q22.76 20.52 20.92 25.20Q19.08 29.88 16.04 34.28L16.04 34.28Q19.60 32.08 19.20 33.72L19.20 33.72L19.12 33.96Q18.80 34.92 17.50 36.56Q16.20 38.20 15.96 38.60L15.96 38.60Z"
+        ></motion.path>
       </svg>
     </div>
-    <div class="nav__overlay">
-      <BackgroundNoise />
-      <div class="nav__content">
-        <div class="social">
-          <a
-            href="https://drive.google.com/file/d/17Dx_HKvm1cV8IKt0U4BoOpj3rrzzl-yT/view?usp=drive_link"
-            target="_blank"
-            type="application/pdf"
-          >
-            <img
-              width="35"
-              height="35"
-              src="https://img.icons8.com/sf-black-filled/64/FFFFFF/document.png"
-              alt="document"
-            />
-            <span>Resume</span>
-          </a>
-          <div
-            class="clipboard_wrapper"
-            @click="copyToClipboard('dorau.patryk1@gmail.com', $event)"
-          >
-            <img
-              width="35"
-              height="35"
-              src="https://img.icons8.com/sf-black-filled/64/FFFFFF/new-post.png"
-              alt="new-post"
-            />
-            <span>dorau.patryk1@gmail.com</span>
-          </div>
-          <div
-            class="clipboard_wrapper"
-            @click="copyToClipboard('+48730798773', $event)"
-          >
-            <img
-              width="30"
-              height="30"
-              src="https://img.icons8.com/ios-filled/50/FFFFFF/apple-phone.png"
-              alt="apple-phone"
-            />
-            <span>+48 730 798 773</span>
-          </div>
-        </div>
-        <div class="navigation">
-          <NavItem
-            v-for="(item, index) in props.navigationData"
-            :index="index + 1"
-            :title="item.title"
-            :scrollId="item.scrollId"
-            :active="item.active"
-            :key="item.scrollId + index"
-            @nav-action="toggleNav"
-          />
-        </div>
-        <div class="social">
-          <a
-            href="https://www.linkedin.com/in/patryk-dorau-018467216/"
-            target="_blank"
-          >
-            <img
-              width="30"
-              height="30"
-              src="https://img.icons8.com/ios-filled/30/FFFFFF/linkedin.png"
-              alt="linkedin"
-            />
-            <span>Linkedin</span>
-          </a>
-          <a href="https://www.facebook.com/patryk.dorau.5" target="_blank">
-            <img
-              width="30"
-              height="30"
-              src="https://img.icons8.com/ios-filled/30/FFFFFF/facebook--v1.png"
-              alt="facebook--v1"
-            />
-            <span>Facebook</span>
-          </a>
-          <a href="https://github.com/PatrykDorau" target="_blank">
-            <img
-              width="30"
-              height="30"
-              src="https://img.icons8.com/glyph-neue/64/FFFFFF/github.png"
-              alt="github"
-            />
-            <span>Github</span>
-          </a>
-        </div>
-      </div>
-      <ModelWindowComponent
-        class="desktop"
-        :resize-max="300"
-        canvas-class="logo"
-        container-class="logo-model"
-        modelPath="logo.glb"
-        animation="ff"
-        :cameraPosition="{ x: 0, y: 0, z: 25 }"
-        :modelPosition="{ x: -1, y: -5, z: -25 }"
-      />
+    <div class="nav__items">
+      <div class="items__element" @click="scrollTo('2')">featured</div>
+      <div class="items__element" @click="scrollTo('3')">Stack</div>
+      <div class="items__element" @click="scrollTo('4')">About</div>
+      <a
+        href="https://drive.google.com/file/d/17cOTRdCwn3LABR1cztGms3i8QbvISL3g/view?usp=sharing"
+        target="_blank"
+        class="resume"
+        >Resume</a
+      >
     </div>
-  </div>
+  </nav>
 </template>
 
 <script setup lang="ts">
-import BackgroundNoise from "../../components/BackgroundNoiseComponent.vue";
-import NavItem from "./NavItemComponent.vue";
-import ModelWindowComponent from "../ModelWindowComponent.vue";
-import { ref } from "vue";
+import { useScrollTo } from "../../composables/useScrollTo";
+const { scrollTo } = useScrollTo();
+import { motion } from "motion-v";
 
-let navToggled = ref(false);
-let noise = ref(false);
-let closeState = ref(false);
-
-interface NavigationItem {
-  title: string;
-  id: number;
-  scrollId: string;
-  active: boolean;
-}
-
-const props = defineProps<{ navigationData: NavigationItem[] }>();
-
-const toggleNav = () => {
-  if (navToggled.value) {
-    closeState.value = true;
-    setTimeout(() => {
-      navToggled.value = false;
-    }, 500);
-    closeState.value = true;
-    setTimeout(() => {
-      noise.value = false;
-    }, 800);
-  } else {
-    closeState.value = false;
-    setTimeout(() => {
-      navToggled.value = true;
-    }, 100);
-    setTimeout(() => {
-      noise.value = true;
-    }, 50);
-  }
-};
-
-const copyToClipboard = (text: string, event: Event) => {
-  (event.target as HTMLElement).classList.toggle("show_clipboard_msg");
-  setTimeout(() => {
-    (event.target as HTMLElement).classList.toggle("show_clipboard_msg");
-  }, 1000);
-  navigator.clipboard.writeText(text);
-};
+const props = defineProps<{ hideNav: boolean }>();
 </script>
