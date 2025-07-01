@@ -29,7 +29,7 @@ export const useProjectsStore = defineStore("caseStudy", () => {
           "Cross-Device Multi-column Responsive Tables",
         ],
         theoretical:
-          "At NEONAIL, we've had enough of paper timecards – the printing, filling, scanning, and re-sending is a genuine time drain for our team. It's high time we fix this! Our goal is to build an intuitive, user-friendly workforce management panel that truly stands out against the best paid solutions on the market.",
+          "At NEONAIL, we've had enough of paper timecards – the printing, filling, scanning, and re-sending is a genuine time drain for our team. Our goal is to build an intuitive, user-friendly workforce management panel that truly stands out against the best paid solutions on the market.",
       },
       process: [
         {

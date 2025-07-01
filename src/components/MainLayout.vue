@@ -266,7 +266,7 @@ onMounted(() => {
   });
 
   let prevScrollPosition = window.pageYOffset;
-  const isMobile = window.innerWidth < 1000;
+  // const isMobile = window.innerWidth < 1000;
 
   scrollHandler = () => {
     const currentScrollY = window.scrollY;
@@ -562,10 +562,14 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.2s ease;
+    transition: all 0.4s ease;
+    box-shadow: inset 0 0 0 -1px #131414;
+    border: 2px solid transparent;
 
     &:hover {
-      filter: brightness(1.1);
+      box-shadow: inset 0 50px 0 -1px #131414;
+      border: 2px solid rgba(255, 255, 255, 0.04);
+      border-radius: 20px;
     }
   }
 
