@@ -9,7 +9,7 @@
           pathLength="1"
           :initial="{ pathLength: 0 }"
           :animate="{ pathLength: 0.6 }"
-          :transition="{ duration: 4, delay: 0.5 }"
+          :transition="{ duration: 4, delay: 1 }"
           stroke="white"
           stroke-width="0.5"
           fill="none"

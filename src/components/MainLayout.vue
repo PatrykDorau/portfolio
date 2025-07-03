@@ -532,7 +532,8 @@ onUnmounted(() => {
   gap: 25px;
   align-items: center;
   justify-content: center;
-  animation: slideToBottom 300ms 2s ease forwards;
+  opacity: 0;
+  animation: slideToBottom 300ms 500ms ease forwards;
 
   @media (max-width: 440px) {
     gap: 10px;
@@ -542,10 +543,12 @@ onUnmounted(() => {
   @keyframes slideToBottom {
     from {
       transform: translateY(-80px);
+      opacity: 0;
     }
 
     to {
       transform: translateY(0);
+      opacity: 1;
     }
   }
 

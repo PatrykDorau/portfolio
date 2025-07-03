@@ -201,16 +201,16 @@ router.beforeEach(async (to, from, next) => {
   // Phase 1: Trigger Custom Overlay Entry Animation
   // Set showAnim to true to make the overlay (SVG curve and page name) appear
   showAnim.value = true;
-  window.scrollTo({
-    top: 0, // Scroll to top immediately for the new page
-  });
 
   // Await the completion of the overlay's ENTER animation.
   // This ensures the screen is fully covered before the router proceeds.
   await new Promise((resolve) =>
-    setTimeout(resolve, OVERLAY_ENTER_DURATION_MS + 50)
+    setTimeout(resolve, OVERLAY_ENTER_DURATION_MS - 100)
   ); // +50ms buffer for safety
 
+  window.scrollTo({
+    top: 0, // Scroll to top immediately for the new page
+  });
   // Phase 2: Allow Vue Router to change the page component
   // At this point, the old page is fully covered by your custom animation.
   // Calling next() allows Vue Router to swap the components within <router-view>.
@@ -279,7 +279,7 @@ router.beforeEach(async (to, from, next) => {
   /* This transition fires AFTER the router.beforeEach timeout */
   transition:
     opacity 0.5s ease,
-    transform 0.5s ease;
+    transform 0.6s 0.1s ease;
 }
 .slide-fade-leave-active {
   /* No delay needed here, let the old component fade out immediately */
@@ -289,17 +289,17 @@ router.beforeEach(async (to, from, next) => {
 }
 
 .slide-fade-enter-from {
-  transform: translateY(40dvh); /* Starts 20px below its final position */
+  transform: translateY(40dvh);
 }
 
 .slide-fade-enter-to {
   opacity: 1;
-  transform: translateY(0); /* Ends at its normal position */
+  transform: translateY(0);
 }
 
 .slide-fade-leave-to {
   opacity: 0;
-  transform: translateY(-100px); /* Moves up and fades out */
+  transform: translateY(-40dvh);
 }
 
 .fade-enter-active,
