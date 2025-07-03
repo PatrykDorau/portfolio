@@ -3,7 +3,13 @@
     <div class="skills">
       <div class="skills__title main__title">STACK</div>
       <div v-for="s in skills" :key="s.title" class="skill">
-        <img :src="s.icon" :alt="`${s.title} icon`" width="40" height="40" />
+        <img
+          :src="s.icon"
+          :alt="`${s.title} icon`"
+          :style="`background-color: ${s.bg}`"
+          width="40"
+          height="40"
+        />
         <div class="skills__text">
           <p class="skill__title">
             {{ s.title }}
@@ -23,7 +29,9 @@ import gitIcon from "../../assets/icons/git.svg";
 import jiraIcon from "../../assets/icons/jira.svg";
 import figmaIcon from "../../assets/icons/figma.svg";
 import bootstrapIcon from "../../assets/icons/bootstrap.svg";
+import swaggerIcon from "../../assets/icons/swagger.svg";
 import threeIcon from "../../assets/icons/three.svg";
+import motionIcon from "../../assets/icons/motion.svg";
 import axiosIcon from "../../assets/icons/axios.svg";
 import vitestIcon from "../../assets/icons/vitest.svg";
 
@@ -48,15 +56,38 @@ let skills = [
     desc: "Test tool",
     icon: vitestIcon,
   },
+
   {
     title: "Axios",
     desc: "HTTP tool",
     icon: axiosIcon,
   },
   {
+    title: "Three.js",
+    desc: "3D Library",
+    icon: threeIcon,
+    bg: "white",
+  },
+  {
+    title: "Motion one",
+    desc: "Animation tool",
+    icon: motionIcon,
+    bg: "yellow",
+  },
+  {
     title: "Git",
     desc: "Control system",
     icon: gitIcon,
+  },
+  {
+    title: "Bootstrap",
+    desc: "Toolkit",
+    icon: bootstrapIcon,
+  },
+  {
+    title: "Swagger",
+    desc: "API docs",
+    icon: swaggerIcon,
   },
   {
     title: "Jira",
@@ -67,16 +98,6 @@ let skills = [
     title: "Figma",
     desc: "Design tool",
     icon: figmaIcon,
-  },
-  {
-    title: "Bootstrap",
-    desc: "Toolkit",
-    icon: bootstrapIcon,
-  },
-  {
-    title: "Three.js",
-    desc: "3D Library",
-    icon: threeIcon,
   },
 ];
 </script>

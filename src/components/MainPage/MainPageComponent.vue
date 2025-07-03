@@ -75,8 +75,8 @@
         :animate="{ opacity: 1 }"
         :transition="{ duration: 0.5, delay: 0.2 }"
       >
-        Hey there, I'm Patryk Dorau. This site is my skills showcase. Currently
-        with Cosmogroup.
+        Hey there, I'm Patryk Dorau. This site is my works showcase. Currently
+        @Cosmogroup.
       </motion.div>
       <motion.div
         class="subtitle"
@@ -95,30 +95,36 @@
         <div class="explore__text">Explore</div>
         <div class="explore__line"></div>
         <div class="explore__socials">
-          <motion.div class="link__container" :while-hover="{ scale: 1.1 }">
-            <a href="https://www.linkedin.com/in/patryk-dorau/" target="_blank"
-              ><img
-                width="30"
-                height="30"
-                src="https://img.icons8.com/ios-filled/30/FFFFFF/linkedin.png"
-                alt="linkedin"
-            /></a>
-          </motion.div>
-          <motion.div class="link__container" :while-hover="{ scale: 1.1 }">
-            <a href="https://github.com/patrykdorau" target="_blank"
-              ><img
-                width="30"
-                height="30"
-                src="https://img.icons8.com/ios-filled/30/FFFFFF/github.png"
-                alt="github"
-            /></a>
-          </motion.div>
-          <a
-            href="https://drive.google.com/file/d/17cOTRdCwn3LABR1cztGms3i8QbvISL3g/view?usp=sharing"
-            target="_blank"
-            class="resume"
-            >Resume</a
+          <motion.div
+            v-for="(link, index) in links"
+            :key="index"
+            class="link__container"
+            :while-hover="{ scale: 1.1 }"
+            @mousemove="magnetEffect($event, 'img')"
+            @mouseleave="resetEffect($event, 'img')"
           >
+            <a :href="link.href" target="_blank">
+              <motion.img
+                width="30"
+                height="30"
+                :src="link.src"
+                :alt="link.alt"
+              />
+            </a>
+          </motion.div>
+
+          <div
+            class="button__container"
+            @mousemove="magnetEffect($event, '.resume')"
+            @mouseleave="resetEffect($event, '.resume')"
+          >
+            <a
+              href="https://drive.google.com/file/d/17cOTRdCwn3LABR1cztGms3i8QbvISL3g/view?usp=sharing"
+              target="_blank"
+              class="resume"
+              >Resume</a
+            >
+          </div>
         </div>
       </motion.div>
     </div>
@@ -128,32 +134,40 @@
 <script setup lang="ts">
 import { useScroll, motion } from "motion-v";
 import { ref, onMounted, onUnmounted, computed } from "vue";
+import { useMagnetEffect } from "../../composables/useMagnetEffect";
+const { magnetEffect, resetEffect } = useMagnetEffect();
 
 const { scrollYProgress } = useScroll();
 
-// 1. Create a standard Vue ref to hold the current scroll progress
 const currentScrollProgress = ref(0);
 
-// 2. Subscribe to the MotionValue's changes and update the Vue ref
 let unsubscribeScroll: (() => void) | null;
 
+const links = ref([
+  {
+    href: "https://www.linkedin.com/in/patryk-dorau/",
+    src: "https://img.icons8.com/ios-filled/30/FFFFFF/linkedin.png",
+    alt: "linkedin",
+  },
+  {
+    href: "https://github.com/patrykdorau",
+    src: "https://img.icons8.com/ios-filled/30/FFFFFF/github.png",
+    alt: "github",
+  },
+]);
+
 onMounted(() => {
-  // The onChange callback gives you the latest numerical value
-  unsubscribeScroll = scrollYProgress.onChange((latestValue) => {
+  unsubscribeScroll = scrollYProgress.on("change", (latestValue) => {
     currentScrollProgress.value = latestValue;
-    // You can console.log here to verify the value is updating:
-    // console.log('currentScrollProgress:', currentScrollProgress.value);
   });
 });
 
 onUnmounted(() => {
-  // Crucially, unsubscribe when the component is unmounted to prevent memory leaks
   if (unsubscribeScroll) {
     unsubscribeScroll();
   }
 });
 
-// Optional: Use a computed property for clearer logic or further derivation
 const shouldHideBar = computed(() => {
   return currentScrollProgress.value > 0.04;
 });
@@ -229,7 +243,42 @@ const shouldHideBar = computed(() => {
   .explore__socials {
     display: flex;
     align-items: center;
-    gap: 10px;
+    padding-bottom: 5px;
+
+    .link__container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      a {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        mix-blend-mode: difference;
+        padding: 10px;
+      }
+
+      &::before {
+        content: "";
+        width: 2px;
+        height: 2px;
+        position: absolute;
+        background-color: transparent;
+        border-radius: 50%;
+        transition: all 0.4s ease;
+        z-index: -1;
+      }
+      &:hover {
+        &::before {
+          width: 40px;
+          height: 40px;
+          background-color: white;
+        }
+      }
+    }
 
     .resume {
       padding: 5px 10px;
@@ -245,7 +294,7 @@ const shouldHideBar = computed(() => {
       transition: box-shadow 0.4s ease;
 
       &:hover {
-        box-shadow: inset 0 -100px 0 -1px rgb(175, 115, 31);
+        box-shadow: inset 0 -50px 0 -1px rgb(175, 115, 31);
       }
     }
   }

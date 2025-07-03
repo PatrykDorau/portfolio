@@ -1,11 +1,8 @@
 <template>
   <router-view v-slot="{ Component }">
-    <transition v-if="!isFirstLoad" :name="isFirstLoad ? 'fade' : 'slide-fade'">
+    <transition :name="isFirstLoad ? 'fade' : 'slide-fade'">
       <component :is="Component" />
     </transition>
-    <!-- <transition v-else name="fade">
-      <component :is="Component" />
-    </transition> -->
   </router-view>
 
   <AnimatePresence>
@@ -47,7 +44,7 @@ import { useProjectsStore } from "./stores/caseStudyStore";
 const router = useRouter();
 const pStore = useProjectsStore();
 
-const showAnim = ref(false); // Controls the presence of the SVG container
+const showAnim = ref(false);
 const isFirstLoad = ref(true);
 const routeName = ref("");
 
@@ -195,25 +192,17 @@ router.beforeEach(async (to, from, next) => {
 
   // Wrap the async logic in a Promise
   return new Promise(async (resolve) => {
-    // 1. Show the curve to initiate its "entry" animation (which covers the screen)
     showAnim.value = true;
-
-    // 2. Wait for the curve's 'animate' state to complete its covering animation.
-    // Let's give it a bit more than that, e.g., 600ms, to ensure it's fully covering.
     await new Promise((res) => setTimeout(res, 600));
 
-    // 3. Hide the curve to initiate its "exit" animation.
-    // AnimatePresence will then handle the 'exit' state for motion.svg
     showAnim.value = false;
 
-    // 4. Now, allow the router to proceed *after* the motion-v exit animation is
-    // expected to have completed.
     window.scrollTo({
       top: 0,
     });
     setTimeout(() => {
-      next(); // Call next() to allow the navigation to proceed
-      resolve(); // Resolve the promise to tell Vue Router the guard is complete
+      next();
+      resolve();
     }, MOTION_EXIT_DURATION_MS + 50);
   });
 });
@@ -223,16 +212,14 @@ router.beforeEach(async (to, from, next) => {
 .page-transition__curve {
   width: 100dvw;
   height: calc(100vh + 600px);
-  top: -300px; // Default position when not animating, or initial state might override
+  top: -300px;
   left: 0;
   position: fixed;
   pointer-events: none;
   z-index: 100;
-  // This background color is for debugging the SVG area
-  // background-color: rgba(255, 0, 0, 0.2);
 
   path {
-    fill: #040608; // Example fill color for your curve
+    fill: #040608;
   }
 }
 
@@ -290,7 +277,7 @@ router.beforeEach(async (to, from, next) => {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 2s ease; /* Controls the speed of the fade */
+  transition: opacity 0.5s 0.2s ease; /* Controls the speed of the fade */
 }
 
 .fade-enter-from,

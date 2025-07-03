@@ -5,7 +5,6 @@ export function useToggleClass() {
     let el = document.querySelector(`.${elementClass}`);
     if (el) {
       el.classList.add(toggleClass);
-      console.log(el.classList);
     }
   };
 

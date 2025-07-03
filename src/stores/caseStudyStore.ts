@@ -19,7 +19,7 @@ export const useProjectsStore = defineStore("caseStudy", () => {
       id: 1,
       banner: "assets/images/projects/rcp/banner/RCPCosmo-banner.png",
       benefit:
-        "Tired of manual processes in workforce management? Accelera genuinely transforms that experience. We focus on freeing up your team's time by automating the timesheet management, ensuring approvals are quick and seamless, and providing transparency across your operations. Less frustration from repetitive tasks each month and more focus on what truly matters.",
+        "Tired of manual processes in workforce management? Yeee, completely understandable, we also were. Accelera genuinely transforms that experience. We focused on freeing up our team's time by automating the timesheet management, ensuring approvals are quick and seamless, and providing transparency across all operations. Less frustration from repetitive tasks each month and more focus on what truly matters.",
       videoPath: "/rcp_edited_converted.mp4",
       caseStudy: true,
       challenges: {

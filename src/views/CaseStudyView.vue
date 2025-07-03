@@ -2,16 +2,16 @@
   <div class="case-study__view">
     <router-link to="/" class="back__button"
       ><img
-        src="../assets/images/icons8-arrow-left-24.png"
+        src="/src/assets/images/controls/icons8-arrow-24.png"
         alt=""
         srcset=""
-      />Back</router-link
-    >
+    /></router-link>
     <div
       class="no-data__info"
       v-if="!store.currentProject || !store.currentProject?.caseStudy"
     >
-      There is no case study for this project! Probably still in prep!
+      This case study doesn't exist! Probably still in prep or the project is
+      nowhere to be found!
     </div>
     <div v-else class="case-study__project">
       <section class="case-study__banner">
@@ -178,7 +178,10 @@
         ></path>
       </svg>
     </div>
-    <FooterComponent class="bg--secondary" />
+    <FooterComponent
+      v-if="store.currentProject && store.currentProject?.caseStudy"
+      class="bg--secondary"
+    />
     <WorkAvailability :manage-position="false" />
   </div>
 </template>
@@ -425,7 +428,7 @@ onUnmounted(() => {
   position: relative;
 }
 .no-data__info {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   bottom: 0;
@@ -434,6 +437,8 @@ onUnmounted(() => {
   align-items: center;
   justify-content: center;
   font-size: 20px;
+  background-color: #131414;
+  z-index: 4;
 }
 .footer {
   opacity: 1;
@@ -458,21 +463,26 @@ onUnmounted(() => {
 .back__button {
   background-color: #af731f;
   width: fit-content;
-  border-radius: 5px;
-  padding: 5px 10px;
+  border-radius: 50%;
+  padding: 10px;
   position: fixed;
   top: 20px;
   left: 20px;
   z-index: 5;
+  rotate: 180deg;
 
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 5px;
   transition: all 0.2s ease;
+  box-shadow: inset 0 0 0 -1px #131414;
+  border: 2px solid transparent;
 
   &:hover {
-    filter: brightness(1.1);
+    box-shadow: inset 0 50px 0 -1px #131414;
+    border: 2px solid rgba(255, 255, 255, 0.04);
+    scale: 1.1;
   }
 }
 

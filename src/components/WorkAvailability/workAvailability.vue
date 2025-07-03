@@ -29,7 +29,7 @@
       </div>
     </div>
 
-    <div class="visible">
+    <div class="availability__visible">
       <div class="progress-bar">
         <svg>
           <circle cx="10" cy="10" r="10"></circle>

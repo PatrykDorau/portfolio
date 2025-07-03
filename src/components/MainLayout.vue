@@ -52,14 +52,14 @@
                 <p class="bio-intro-statement"></p>
                 <p class="bio-detail-item">
                   Striving for excellence and optimized performance. Working
-                  with Vue ecosystem (Vue.js,Vitest, Pinia) and TypeScript. My
+                  with Vue ecosystem (Vue.js, Vitest, Pinia) and TypeScript. My
                   professional philosophy is simple: grow, focus on the
                   essentials and deliver solid work.
                 </p>
                 <p class="bio-detail-item">
-                  Privately, I like to go out for squash, a game of football. I
-                  was studying Math and emerged with bachelor's in data analysis
-                  and statistics. My faith in Jesus is a key part of my
+                  Privately, I like to go out for squash, or a game of football.
+                  I was studying Math and emerged with bachelor's in data
+                  analysis and statistics. My faith in Jesus is a key part of my
                   identity. These aspects of my life bring balance and a
                   grounded perspective to my professional carrer.
                 </p>
@@ -312,7 +312,7 @@ onMounted(() => {
 
     if (skills.length > 0) {
       const totalRows = skills.length / 2;
-      const easingStrength = 0.8;
+      const easingStrength = 0.9;
 
       function easeOutCubic(t: number) {
         return 1 - Math.pow(1 - t, 3);
@@ -496,7 +496,7 @@ onUnmounted(() => {
     z-index: 1000;
 
     :first-child {
-      stroke: #191919 !important;
+      stroke: rgba(255, 255, 255, 0.08) !important;
     }
 
     :nth-child(2) {
@@ -534,6 +534,11 @@ onUnmounted(() => {
   justify-content: center;
   animation: slideToBottom 300ms ease forwards;
 
+  @media (max-width: 440px) {
+    gap: 10px;
+    padding: 5px 10px;
+  }
+
   @keyframes slideToBottom {
     from {
       transform: translateY(-80px);
@@ -569,7 +574,7 @@ onUnmounted(() => {
     &:hover {
       box-shadow: inset 0 50px 0 -1px #131414;
       border: 2px solid rgba(255, 255, 255, 0.04);
-      border-radius: 20px;
+      border-radius: 10px;
     }
   }
 
@@ -584,6 +589,10 @@ onUnmounted(() => {
     justify-content: center;
     gap: 25px;
     text-transform: capitalize;
+
+    @media (max-width: 440px) {
+      gap: 10px;
+    }
 
     .items__element {
       transition: all 0.2s ease;
@@ -600,14 +609,12 @@ onUnmounted(() => {
         height: 10px;
         background-color: white;
         border-radius: 50%;
-        transition: all 0.3s ease;
-        transform: translateY(-60px);
+        transition: all 0.4s ease;
         opacity: 0;
       }
 
       &:hover {
         &::before {
-          transform: translateY(0);
           opacity: 1;
           background-color: #af731f;
         }
@@ -859,6 +866,7 @@ onUnmounted(() => {
           font-size: 1.4rem;
           gap: 5px;
           letter-spacing: 1px;
+          justify-content: flex-start;
         }
       }
     }

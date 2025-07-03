@@ -35,7 +35,7 @@
             "
           >
             <img
-              src="/controls/icons8-double-left-24.png"
+              src="/src/assets/images/controls/icons8-double-left-24.png"
               alt="Move project video 15 seconds backwards"
             />
           </motion.div>
@@ -52,12 +52,12 @@
           >
             <img
               v-if="videoControls.status === 'pause'"
-              src="/controls/icons8-play-32.png"
+              src="/src/assets/images/controls/icons8-play-32.png"
               alt="Start project video icon"
             />
             <img
               v-else
-              src="/controls/icons8-pause-32.png"
+              src="/src/assets/images/controls/icons8-pause-32.png"
               alt="Pause project video icon"
             />
           </motion.div>
@@ -74,7 +74,7 @@
           >
             <img
               class="rotate180"
-              src="/controls/icons8-double-left-24.png"
+              src="/src/assets/images/controls/icons8-double-left-24.png"
               alt="Move project video 15 seconds forwards"
             />
           </motion.div>
@@ -98,7 +98,14 @@
         type="button"
         class="case-study"
       >
-        Case study
+        <span class="case-study__icon"
+          ><img
+            src="/src/assets/images/controls/icons8-arrow-24.png"
+            alt=""
+            height="20"
+            srcset=""
+        /></span>
+        <span class="case-study__text">Case study</span>
       </button>
     </div>
   </div>
@@ -147,7 +154,6 @@ const setVideoFrames = (type: "forwards" | "backwards" | "status") => {
 const routerTo = async (to: string) => {
   pStore.currentCaseStudy = props.data.id;
 
-  console.log(to);
 
   router.push({ path: to });
 };

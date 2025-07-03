@@ -57,13 +57,18 @@
       &:nth-child(9) {
         top: 60px;
       }
-      // &:nth-child(10),
-      // &:nth-child(11) {
-      //   top: 80px;
-      // }
+      &:nth-child(10),
+      &:nth-child(11) {
+        top: 80px;
+      }
+      &:nth-child(12),
+      &:nth-child(13) {
+        top: 100px;
+      }
 
       img {
         transition: all 0.2s ease;
+        border-radius: 5px;
       }
 
       &:hover {
