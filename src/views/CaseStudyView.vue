@@ -167,7 +167,6 @@
         viewBox="0 0 1440 320"
         style="transform: translateY(10px)"
       >
-        <!-- fill="#0d0e0e" -->
         <path
           data-v-3001c0cf=""
           id="project-wave-5"
@@ -362,7 +361,7 @@ onMounted(() => {
 
     const flowScrollProgress = getElementScrollProgress(
       currentScrollY,
-      sections.outcome
+      sections.flow
     );
 
     if (sections.bannerImg) {
@@ -403,6 +402,7 @@ onMounted(() => {
       updateWavePath(bannerScrollProgress, waves.wave1);
     }
 
+    console.log(flowScrollProgress);
     if (flowScrollProgress) {
       updateWavePath(flowScrollProgress, waves.wave2);
     }

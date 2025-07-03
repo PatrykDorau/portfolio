@@ -312,7 +312,7 @@ onMounted(() => {
 
     if (skills.length > 0) {
       const totalRows = skills.length / 2;
-      const easingStrength = 0.9;
+      const easingStrength = 0.8;
 
       function easeOutCubic(t: number) {
         return 1 - Math.pow(1 - t, 3);

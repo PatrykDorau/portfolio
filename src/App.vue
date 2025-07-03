@@ -187,14 +187,22 @@ router.beforeEach(async (to, from, next) => {
 
   if (code) {
     routeName.value = pStore.currentProject?.title || "Into unknown";
-  } else if (to.path === "/") {
+  } else if (to.path === "/" && from.path == "/") {
+    if (window.innerWidth < 768) {
+      routeName.value = "Welcome!";
+    } else {
+      routeName.value = "Welcome to my portfolio!";
+    }
+  } else {
     routeName.value = "Home";
   }
+
+  console.log(to.path, from.path);
   // If navigating to the same path, allow it immediately without transition
-  if (to.path == from.path) {
-    next();
-    return;
-  }
+  // if (to.path == from.path) {
+  //   next();
+  //   return;
+  // }
 
   // --- START OF ADJUSTED LOGIC ---
 

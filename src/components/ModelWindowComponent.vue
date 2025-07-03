@@ -97,14 +97,46 @@ let vidTexture: THREE.VideoTexture | null = null;
  * Initializes and configures the video elements (hidden, muted, autoplay, loop).
  * Appends them to the body so they can load and play.
  */
-const setupVideoElements = () => {
+// const setupVideoElements = () => {
+//   // Loader video setup
+//   loader.src = "loader.mp4";
+//   loader.muted = true;
+//   loader.autoplay = true;
+//   loader.loop = true;
+//   loader.playsInline = true; // Important for mobile browsers
+//   loader.style.display = "none"; // Hide the video element
+//   document.body.appendChild(loader);
+
+//   // Main video setup
+//   if (props.videoSrc) {
+//     vid.src = props.videoSrc;
+//   }
+//   vid.muted = true;
+//   vid.autoplay = true;
+//   vid.loop = true;
+//   vid.playsInline = true; // Important for mobile browsers
+//   vid.style.display = "none"; // Hide the video element
+//   document.body.appendChild(vid);
+
+//   // Attempt to play them. These will resolve if allowed, or catch errors.
+//   loader
+//     .play()
+//     .catch((e) => console.error("Error playing initial loader video:", e));
+//   if (props.videoSrc) {
+//     vid
+//       .play()
+//       .catch((e) => console.error("Error playing initial main video:", e));
+//   }
+// };
+
+const setupVideoElements = async () => {
   // Loader video setup
   loader.src = "loader.mp4";
   loader.muted = true;
-  loader.autoplay = true;
+  loader.autoplay = false; // We will play it manually after preloading
   loader.loop = true;
-  loader.playsInline = true; // Important for mobile browsers
-  loader.style.display = "none"; // Hide the video element
+  loader.playsInline = true;
+  loader.style.display = "none";
   document.body.appendChild(loader);
 
   // Main video setup
@@ -112,20 +144,52 @@ const setupVideoElements = () => {
     vid.src = props.videoSrc;
   }
   vid.muted = true;
-  vid.autoplay = true;
+  vid.autoplay = false; // We will play it manually after preloading
   vid.loop = true;
-  vid.playsInline = true; // Important for mobile browsers
-  vid.style.display = "none"; // Hide the video element
+  vid.playsInline = true;
+  vid.style.display = "none";
   document.body.appendChild(vid);
 
-  // Attempt to play them. These will resolve if allowed, or catch errors.
-  loader
-    .play()
-    .catch((e) => console.error("Error playing initial loader video:", e));
-  if (props.videoSrc) {
-    vid
+  // Preload both videos concurrently
+  try {
+    await Promise.all([
+      preloadVideo(loader),
+      props.videoSrc ? preloadVideo(vid) : Promise.resolve(vid), // Only preload vid if src exists
+    ]);
+    console.log("All initial videos preloaded successfully.");
+
+    // Now that they are preloaded, you can attempt to play them if needed immediately
+    // For setupVideoElements, you might not want to play them immediately if they are for textures.
+    // The play calls here are mostly for unblocking autoplay policies.
+    loader
       .play()
-      .catch((e) => console.error("Error playing initial main video:", e));
+      .catch((e) => console.error("Error playing initial loader video:", e));
+    if (props.videoSrc) {
+      vid
+        .play()
+        .catch((e) => console.error("Error playing initial main video:", e));
+    }
+  } catch (error) {
+    console.error("One or more initial videos failed to preload:", error);
+    // Fallback or error handling for when preloading fails
+  }
+
+  // Initialize textures after videos are ready
+  // This part is crucial for making sure the textures are ready when applyScreenTexture is called
+  loaderTexture = new THREE.VideoTexture(loader);
+  loaderTexture.colorSpace = THREE.SRGBColorSpace;
+  // ... (set other loaderTexture properties if needed)
+
+  if (props.videoSrc) {
+    vidTexture = new THREE.VideoTexture(vid);
+    vidTexture.colorSpace = THREE.SRGBColorSpace;
+    vidTexture.wrapS = THREE.RepeatWrapping;
+    vidTexture.minFilter = THREE.LinearFilter;
+    vidTexture.magFilter = THREE.LinearFilter;
+    vidTexture.repeat.x = -1;
+    vidTexture.offset.x = 1;
+    vidTexture.generateMipmaps = true;
+    vidTexture.offset.set(-0.008, 0.008);
   }
 };
 
@@ -172,10 +236,121 @@ const applyScreenTexture = (texture: THREE.VideoTexture) => {
   });
 };
 
+const preloadVideo = (videoElement: HTMLVideoElement) => {
+  return new Promise((resolve, reject) => {
+    // Set preload attribute for browser hint
+    videoElement.preload = "auto";
+
+    // Event listener for when the video can play through without buffering
+    videoElement.addEventListener(
+      "canplaythrough",
+      () => {
+        console.log(`${videoElement.src} is ready to play through.`);
+        resolve(videoElement);
+      },
+      { once: true }
+    ); // Use { once: true } to automatically remove the listener after it fires
+
+    // Error handling
+    videoElement.addEventListener(
+      "error",
+      (e) => {
+        console.error(`Error preloading video ${videoElement.src}:`, e);
+        reject(e);
+      },
+      { once: true }
+    );
+
+    // Explicitly load the video
+    // This needs to be called AFTER setting the src if it's dynamic
+    if (videoElement.src) {
+      videoElement.load();
+    } else {
+      // If src is not set, resolve immediately or reject if it's a critical video
+      resolve(videoElement);
+    }
+  });
+};
+
 /**
  * Handles updates to props.videoSrc, switching the screen texture.
  */
-const updateVideoTextureOnModel = () => {
+// const updateVideoTextureOnModel = () => {
+//   if (props.canvasClass !== "tablet") {
+//     return;
+//   }
+
+//   if (vidTexture) {
+//     vidTexture.dispose();
+//     vidTexture = null;
+//   }
+
+//   if (loaderTexture) {
+//     applyScreenTexture(loaderTexture);
+//     loader
+//       .play()
+//       .catch((e) => console.error("Error playing loader video on update:", e));
+//   }
+
+//   if (props.videoSrc) {
+//     vid.src = props.videoSrc;
+//     vid.load();
+//     vid.onloadeddata = () => {
+//       vidTexture = new THREE.VideoTexture(vid);
+//       vidTexture.colorSpace = THREE.SRGBColorSpace;
+//       vidTexture.wrapS = THREE.RepeatWrapping;
+//       vidTexture.minFilter = THREE.LinearFilter;
+//       vidTexture.magFilter = THREE.LinearFilter;
+//       vidTexture.repeat.x = -1;
+//       vidTexture.offset.x = 1;
+//       vidTexture.generateMipmaps = true;
+//       vidTexture.offset.set(-0.008, 0.008);
+//       vid.playbackRate = 0.85;
+
+//       applyScreenTexture(vidTexture);
+
+//       loader.pause();
+//       loader.currentTime = 0;
+//       setTimeout(() => {
+//         vid
+//           .play()
+//           .catch((e) =>
+//             console.error("Error playing main video after texture update:", e)
+//           );
+//       }, 100);
+//     };
+//     vid.onerror = (e) => {
+//       console.error("Error loading main video:", e);
+//       if (loaderTexture) {
+//         applyScreenTexture(loaderTexture);
+//         loader
+//           .play()
+//           .catch((e) =>
+//             console.error(
+//               "Error playing loader video after main video load error:",
+//               e
+//             )
+//           );
+//       }
+//     };
+//   } else {
+//     if (loaderTexture) {
+//       applyScreenTexture(loaderTexture);
+//       loader
+//         .play()
+//         .catch((e) =>
+//           console.error("Error playing loader video when videoSrc is null:", e)
+//         );
+//     }
+//     vid.pause();
+//     vid.currentTime = 0;
+//   }
+// };
+
+// --- Watchers ---
+
+const updateVideoTextureOnModel = async () => {
+  // Make this async
   if (props.canvasClass !== "tablet") {
     return;
   }
@@ -187,52 +362,66 @@ const updateVideoTextureOnModel = () => {
 
   if (loaderTexture) {
     applyScreenTexture(loaderTexture);
+    // Since loader is already preloaded, we just need to play it
     loader
       .play()
       .catch((e) => console.error("Error playing loader video on update:", e));
   }
 
   if (props.videoSrc) {
-    vid.src = props.videoSrc;
-    vid.load();
-    vid.onloadeddata = () => {
-      vidTexture = new THREE.VideoTexture(vid);
-      vidTexture.colorSpace = THREE.SRGBColorSpace;
-      vidTexture.wrapS = THREE.RepeatWrapping;
-      vidTexture.minFilter = THREE.LinearFilter;
-      vidTexture.magFilter = THREE.LinearFilter;
-      vidTexture.repeat.x = -1;
-      vidTexture.offset.x = 1;
-      vidTexture.generateMipmaps = true;
-      vidTexture.offset.set(-0.008, 0.008);
-      vid.playbackRate = 0.85;
-
-      applyScreenTexture(vidTexture);
-
-      loader.pause();
-      loader.currentTime = 0;
-      setTimeout(() => {
-        vid
-          .play()
-          .catch((e) =>
-            console.error("Error playing main video after texture update:", e)
-          );
-      }, 100);
-    };
-    vid.onerror = (e) => {
-      console.error("Error loading main video:", e);
-      if (loaderTexture) {
-        applyScreenTexture(loaderTexture);
-        loader
-          .play()
-          .catch((e) =>
-            console.error(
-              "Error playing loader video after main video load error:",
-              e
-            )
-          );
+    // If the video source changes, we need to re-preload/load it
+    if (vid.src !== props.videoSrc) {
+      // Only update if the source has actually changed
+      vid.src = props.videoSrc;
+      console.log(
+        `Main video src changed to: ${props.videoSrc}. Preloading...`
+      );
+      try {
+        await preloadVideo(vid); // Wait for the new video to preload
+        console.log(`New main video ${props.videoSrc} preloaded successfully.`);
+      } catch (e) {
+        console.error("Error preloading new main video:", e);
+        // Fallback to loader if the main video fails to preload
+        if (loaderTexture) {
+          applyScreenTexture(loaderTexture);
+          loader
+            .play()
+            .catch((e) =>
+              console.error(
+                "Error playing loader video after new main video preload error:",
+                e
+              )
+            );
+        }
+        return; // Stop execution if preload failed
       }
-    };
+    }
+
+    // if (vidTexture) { // Dispose existing texture if src changed and we're recreating
+    //     vidTexture.dispose();
+    // }
+    vidTexture = new THREE.VideoTexture(vid);
+    vidTexture.colorSpace = THREE.SRGBColorSpace;
+    vidTexture.wrapS = THREE.RepeatWrapping;
+    vidTexture.minFilter = THREE.LinearFilter;
+    vidTexture.magFilter = THREE.LinearFilter;
+    vidTexture.repeat.x = -1;
+    vidTexture.offset.x = 1;
+    vidTexture.generateMipmaps = true;
+    vidTexture.offset.set(-0.008, 0.008);
+    vid.playbackRate = 0.85;
+
+    applyScreenTexture(vidTexture);
+
+    loader.pause();
+    loader.currentTime = 0;
+    setTimeout(() => {
+      vid
+        .play()
+        .catch((e) =>
+          console.error("Error playing main video after texture update:", e)
+        );
+    }, 100);
   } else {
     if (loaderTexture) {
       applyScreenTexture(loaderTexture);
@@ -246,8 +435,6 @@ const updateVideoTextureOnModel = () => {
     vid.currentTime = 0;
   }
 };
-
-// --- Watchers ---
 
 watch(
   animationList,
@@ -362,7 +549,7 @@ onMounted(() => {
   gltfLoader.load(props.modelPath, (gltf) => {
     model = gltf.scene;
 
-    console.log(model)
+    console.log(model);
 
     model.position.set(
       props.modelPosition.x,
