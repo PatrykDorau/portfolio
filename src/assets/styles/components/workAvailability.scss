@@ -17,6 +17,22 @@
     z-index: 7;
   }
 
+  @media (max-width: 768px) {
+    &:hover {
+      padding-bottom: 0px !important;
+      border: 0 !important;
+      background-color: transparent !important;
+
+      .overflow__hider {
+        padding: 0px !important;
+      }
+
+      .contact__content {
+        grid-template-rows: 0fr !important;
+      }
+    }
+  }
+
   img {
     max-width: 300px;
     width: 100%;

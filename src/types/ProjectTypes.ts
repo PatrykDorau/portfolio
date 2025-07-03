@@ -40,6 +40,7 @@ export interface Project {
   process?: ProjectProcessStep[]; // Optional
   outcome?: ProjectOutcome[]; // Optional
   userFlow?: ProjectUserFlowStep[]; // Optional
+  hideOutcomeInfo?: boolean; // Optional
   stack: string[];
   team: string | string[]; // Can be a string or an array of strings
   description: string;

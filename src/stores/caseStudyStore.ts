@@ -180,24 +180,102 @@ export const useProjectsStore = defineStore("caseStudy", () => {
       team: "Front End Developer, Back End Developer, UI/UX Designer",
       description: `BizBrief App is an all-in-one internal news platform designed to keep everyone in your company informed and engaged. It offers a dynamic, organized system for sharing company updates, announcements, and internal content through customizable categories and posts.`,
       active: false,
-      year: "2025",
+      year: "2024/2025",
     },
     {
-      title: "Cosmo Orders",
-      categories: ["Tracking", "Orders", "Returns"],
+      client: "NEONAIL",
+      title: "NNCatalog",
+      country: "Poland",
+      industry: "Beauty | E-commerce",
+      duration: "2 months and counting",
+      categories: ["Library", "B2B", "Products"],
       id: 3,
-      videoPath: "/returns_converted.mp4",
-      stack: ["Vue 3", "TS", "Axios", "Vite"],
-      team: [
-        "1 Front End Developer",
-        "1 Back End Developer",
-        "1 UX/UI Designer",
+      banner: "/projects/catalog/banner/nn-catalog-banner.png",
+      benefit:
+        "NEONAIL Catalog is all in one products library for B2B clients mainly. It's simple and effective design doesn't distracts with a lot of choices and allows to keep focus on the main thing it provides, the extensive library of products that are available across different NEONAIL marketplaces.",
+      videoPath: "/nn-catalog.mp4",
+      caseStudy: true,
+      challenges: {
+        technical: [
+          "Complex data table with filters, searching and pagination",
+          "Performance for a lot of records",
+          "Cross-Device responsiveness",
+        ],
+        theoretical:
+          "NEONAIL is developing a product library specifically for our B2B contractors. This new platform will centralize all our product information, making life easier for contractors and possibly customers.",
+      },
+      process: [
+        {
+          title: "Planning",
+          keywords: [
+            "Deconstructing UI/UX Designs",
+            "Feature Breakdown",
+            "Technical Feasibility Assessment",
+          ],
+        },
+        {
+          title: "Development",
+          keywords: [
+            "Design Recreation",
+            "Components Development",
+            "Styles & Animations",
+            "API Integration",
+          ],
+        },
+        {
+          title: "Optimization",
+          keywords: ["Testing", "Performance tuning", "Images optimizing"],
+        },
+        {
+          title: "Deployment",
+          keywords: ["Build Process", "Hosting"],
+        },
       ],
-      description: `Cosmo Returns is a user-friendly platform designed to streamline the process of managing returns and complaints for customers. With an intuitive interface, it allows users to easily create, track, and review return requests and complaints, ensuring a smooth resolution process.`,
+      outcome: [
+        {
+          data: "24/7",
+          description: "Access to entire catalog",
+        },
+        {
+          data: "3000+",
+          description: "Products available",
+        },
+        {
+          data: "3+",
+          description: "Marketplaces",
+        },
+      ],
+      outcomeDesc:
+        "We developed product library that accomplish simplicity and efficiency. There is not much going on besides the core library features - that's exactly what we planned, zero user attention dilution. Table works smoothly with over 3000 products, caching, searching and pagination. Goals have been reached",
+      userFlow: [
+        {
+          title: "User searching for product",
+          img: "/flow/catalog/catalog-user.png",
+        },
+      ],
+      hideOutcomeInfo: true,
+      stack: ["Vue 3", "Typescript", "Pinia", "Axios", "Vite"],
+      team: "Front End Developer, Back End Developer, UI/UX Designer",
+      description: ``,
       active: false,
-      caseStudy: false,
-      year: "2024",
+      year: "2025/In progress",
     },
+    // {
+    //   title: "Cosmo Orders",
+    //   categories: ["Tracking", "Orders", "Returns"],
+    //   id: 3,
+    //   videoPath: "/returns_converted.mp4",
+    //   stack: ["Vue 3", "TS", "Axios", "Vite"],
+    //   team: [
+    //     "1 Front End Developer",
+    //     "1 Back End Developer",
+    //     "1 UX/UI Designer",
+    //   ],
+    //   description: `Cosmo Returns is a user-friendly platform designed to streamline the process of managing returns and complaints for customers. With an intuitive interface, it allows users to easily create, track, and review return requests and complaints, ensuring a smooth resolution process.`,
+    //   active: false,
+    //   caseStudy: false,
+    //   year: "2024",
+    // },
   ];
 
   return { currentProject, projectsList, currentCaseStudy };

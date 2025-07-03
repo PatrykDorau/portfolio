@@ -88,6 +88,10 @@
     z-index: 1000;
 
     transition: transform 0.2s ease;
+
+    @media (max-width: 768px) {
+      pointer-events: none;
+    }
   }
 
   .list {
@@ -97,13 +101,6 @@
     padding: 120px 45px 45px 45px;
     margin-inline: auto;
     max-width: 1600px;
-    // padding-left: 30%;
-    // height: 100%;
-
-    // background-color: var(--neumorphic-bg);
-    // border-radius: 60px;
-    // border: 2px solid rgba(255, 255, 255, 0.04);
-    // box-shadow: rgba(0, 0, 0, 0.3) 0px 0px 19px 12px; /* Shadow for the list background */
 
     ::-webkit-scrollbar {
       display: none;
@@ -112,8 +109,6 @@
     scrollbar-width: none; /* Firefox */
 
     .page_title {
-      // border: 2px solid rgba(255, 255, 255, 0.04);
-      // background-color: rgba(255, 255, 255, 0.1);
       position: absolute;
       color: white;
       padding: 10px;

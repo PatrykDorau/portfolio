@@ -153,7 +153,7 @@
             <p class="element__description">{{ ou.description }}</p>
           </div>
         </div>
-        <div class="outcome__info">
+        <div class="outcome__info" v-if="!store.currentProject.hideOutcomeInfo">
           *These numbers are based on highly sophisticated calculations and my
           distant memories of mathematics class, so they're probably
           <i>ALMOST</i> accurate.

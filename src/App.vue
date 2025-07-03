@@ -170,10 +170,29 @@ const name = computed(() => {
   };
 });
 
-// 1. Add this constant definition near your MOTION_EXIT_DURATION_MS.
-// This calculates the maximum duration for your overlay to animate *in* and cover the screen.
+const greetings = ["Bienvenue!", "Hallo!", "Witaj!", "Ciao!", "ようこそ!"];
+
+let greetingAnimationActive = false;
+
+async function startGreetingAnimation(greetings: string[], interval = 110) {
+  if (greetingAnimationActive) return;
+  greetingAnimationActive = true;
+
+  for (let i = 0; i < greetings.length; i++) {
+    routeName.value = greetings[i];
+    await new Promise(requestAnimationFrame);
+    await delay(interval);
+  }
+
+  routeName.value = "Welcome!";
+  greetingAnimationActive = false;
+}
+
+function delay(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 const OVERLAY_ENTER_DURATION_MS = Math.max(
-  // Calculate duration + delay for each element's 'animate' phase
   (slide.value.animate.transition.duration || 0) * 1000 +
     (curve.value.animate.transition.duration || 0) * 1000 +
     (curve.value.animate.transition.delay || 0) * 1000,
@@ -181,65 +200,38 @@ const OVERLAY_ENTER_DURATION_MS = Math.max(
     (name.value.animate.transition.delay || 0) * 1000
 );
 
-// 2. Adjust your router.beforeEach
 router.beforeEach(async (to, from, next) => {
   let code = to.params.code;
 
   if (code) {
     routeName.value = pStore.currentProject?.title || "Into unknown";
   } else if (to.path === "/" && from.path == "/") {
-    if (window.innerWidth < 768) {
-      routeName.value = "Welcome!";
-    } else {
-      routeName.value = "Welcome to my portfolio!";
-    }
+    setTimeout(() => {
+      startGreetingAnimation(greetings);
+    }, 200);
   } else {
     routeName.value = "Home";
   }
 
-  console.log(to.path, from.path);
-  // If navigating to the same path, allow it immediately without transition
-  // if (to.path == from.path) {
-  //   next();
-  //   return;
-  // }
-
-  // --- START OF ADJUSTED LOGIC ---
-
-  // Phase 1: Trigger Custom Overlay Entry Animation
-  // Set showAnim to true to make the overlay (SVG curve and page name) appear
   showAnim.value = true;
 
-  // Await the completion of the overlay's ENTER animation.
-  // This ensures the screen is fully covered before the router proceeds.
   await new Promise((resolve) =>
-    setTimeout(resolve, OVERLAY_ENTER_DURATION_MS - 100)
-  ); // +50ms buffer for safety
+    setTimeout(resolve, OVERLAY_ENTER_DURATION_MS - 50)
+  );
 
   window.scrollTo({
-    top: 0, // Scroll to top immediately for the new page
+    top: 0,
   });
-  // Phase 2: Allow Vue Router to change the page component
-  // At this point, the old page is fully covered by your custom animation.
-  // Calling next() allows Vue Router to swap the components within <router-view>.
-  // Vue's own 'slide-fade' transition will occur behind your overlay if configured.
+
   next();
 
-  // Phase 3: Trigger Custom Overlay Exit Animation (after the new page is ready)
-  // We need to wait for the new component to be fully rendered and mounted
-  // before starting the overlay's exit animation to prevent a flash of unstyled content.
-  await nextTick(); // Vue's nextTick ensures DOM updates are flushed.
+  await nextTick();
 
-  // Add a very small buffer to ensure the browser has fully rendered the new component
-  // and is ready for the overlay to animate out.
   await new Promise((resolve) => setTimeout(resolve, 50));
 
-  // Now, trigger the exit animation for your custom overlay.
-  showAnim.value = false; // This tells AnimatePresence to run the exit animations.
+  showAnim.value = false;
 
-  // The router's navigation is now complete. The overlay's exit animation will play out.
-  return Promise.resolve(); // Resolve the promise for beforeEach
-  // --- END OF ADJUSTED LOGIC ---
+  return Promise.resolve();
 });
 </script>
 
