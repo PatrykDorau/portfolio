@@ -532,7 +532,7 @@ onUnmounted(() => {
   gap: 25px;
   align-items: center;
   justify-content: center;
-  animation: slideToBottom 300ms ease forwards;
+  animation: slideToBottom 300ms 2s ease forwards;
 
   @media (max-width: 440px) {
     gap: 10px;
