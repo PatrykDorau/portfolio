@@ -17,7 +17,7 @@ export const useProjectsStore = defineStore("caseStudy", () => {
       duration: "6 months",
       categories: ["WFM", "RBAC", "Timesheets"],
       id: 1,
-      banner: "assets/images/projects/rcp/banner/RCPCosmo-banner.png",
+      banner: "/projects/rcp/banner/RCPCosmo-banner.png",
       benefit:
         "Tired of manual processes in workforce management? Yeee, completely understandable, we also were. Accelera genuinely transforms that experience. We focused on freeing up our team's time by automating the timesheet management, ensuring approvals are quick and seamless, and providing transparency across all operations. Less frustration from repetitive tasks each month and more focus on what truly matters.",
       videoPath: "/rcp_edited_converted.mp4",
@@ -78,15 +78,15 @@ export const useProjectsStore = defineStore("caseStudy", () => {
       userFlow: [
         {
           title: "Manager creating timecard",
-          img: "assets/images/flow/rcp/RCP-manager_creating_timecard.png",
+          img: "/flow/rcp/RCP-manager_creating_timecard.png",
         },
         {
           title: "Manager approving timecard",
-          img: "assets/images/flow/rcp/RCP-manager_approving.png",
+          img: "/flow/rcp/RCP-manager_approving.png",
         },
         {
           title: "User filling in timecard",
-          img: "assets/images/flow/rcp/RCP-user_filling_timecard.png",
+          img: "/flow/rcp/RCP-user_filling_timecard.png",
         },
       ],
       stack: ["Vue 3", "Typescript", "Pinia", "Axios", "Vite"],
@@ -103,7 +103,7 @@ export const useProjectsStore = defineStore("caseStudy", () => {
       duration: "3 months",
       categories: ["Announcements", "Updates", "News"],
       id: 2,
-      banner: "assets/images/projects/news/banner/CosmoNews-banner.png",
+      banner: "/projects/news/banner/CosmoNews-banner.png",
       benefit:
         "BizBrief App is an all-in-one internal news platform designed to keep everyone in your company informed and engaged. It offers a dynamic, organized system for sharing company updates, announcements, and internal content through customizable categories and posts.",
       videoPath: "/cosmo_news_converted.mp4",
@@ -165,15 +165,15 @@ export const useProjectsStore = defineStore("caseStudy", () => {
       userFlow: [
         {
           title: "Manager creating post",
-          img: "assets/images/flow/news/NEWS-manager_post.png",
+          img: "/flow/news/NEWS-manager_post.png",
         },
         {
           title: "User searching for post",
-          img: "assets/images/flow/news/NEWS-user_search.png",
+          img: "/flow/news/NEWS-user_search.png",
         },
         {
           title: "User hot news",
-          img: "assets/images/flow/news/NEWS-user_hot_news.png",
+          img: "/flow/news/NEWS-user_hot_news.png",
         },
       ],
       stack: ["Vue 3", "Ts", "Axios", "Vite"],

@@ -67,9 +67,8 @@
           <BrowserWindow id="project-banner" v-if="store.currentProject.banner">
             <template #window-content>
               <img
-                :src="createUrl(store.currentProject.banner)"
-                alt=""
-                srcset=""
+                :src="store.currentProject.banner"
+                alt="project banner image"
               />
             </template>
           </BrowserWindow>
@@ -135,7 +134,7 @@
             <BrowserWindow>
               <template #title>{{ uf.title }}</template>
               <template #window-content>
-                <img :src="createUrl(uf.img)" alt="" srcset="" />
+                <img :src="uf.img" alt="user flow image" />
               </template>
             </BrowserWindow>
           </div>
