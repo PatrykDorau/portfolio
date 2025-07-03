@@ -204,9 +204,9 @@ const store = useProjectsStore();
 
 store.currentCaseStudy = Number(route.params.code);
 
-const createUrl = (path: string) => {
-  return `/src/${path}`;
-};
+// const createUrl = (path: string) => {
+//   return `/src/${path}`;
+// };
 
 let scrollHandler: (() => void) | null = null;
 const observers: IntersectionObserver[] = [];
