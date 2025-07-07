@@ -17,7 +17,7 @@ export const useProjectsStore = defineStore("caseStudy", () => {
       duration: "6 months",
       categories: ["WFM", "RBAC", "Timesheets"],
       id: 1,
-      banner: "/projects/rcp/banner/RCPCosmo-banner.png",
+      banner: "/projects/rcp/banner/RCPCosmo-banner.webp",
       benefit:
         "Tired of manual processes in workforce management? Yeee, completely understandable, we also were. Accelera genuinely transforms that experience. We focused on freeing up our team's time by automating the timesheet management, ensuring approvals are quick and seamless, and providing transparency across all operations. Less frustration from repetitive tasks each month and more focus on what truly matters.",
       videoPath: "/rcp_edited_converted.mp4",
@@ -103,7 +103,7 @@ export const useProjectsStore = defineStore("caseStudy", () => {
       duration: "3 months",
       categories: ["Announcements", "Updates", "News"],
       id: 2,
-      banner: "/projects/news/banner/CosmoNews-banner.png",
+      banner: "/projects/news/banner/CosmoNews-banner.webp",
       benefit:
         "BizBrief App is an all-in-one internal news platform designed to keep everyone in your company informed and engaged. It offers a dynamic, organized system for sharing company updates, announcements, and internal content through customizable categories and posts.",
       videoPath: "/cosmo_news_converted.mp4",
@@ -190,7 +190,7 @@ export const useProjectsStore = defineStore("caseStudy", () => {
       duration: "2 months and counting",
       categories: ["Library", "B2B", "Products"],
       id: 3,
-      banner: "/projects/catalog/banner/nn-catalog-banner.png",
+      banner: "/projects/catalog/banner/nn-catalog-banner.webp",
       benefit:
         "NEONAIL Catalog is all in one products library for B2B clients mainly. It's simple and effective design doesn't distracts with a lot of choices and allows to keep focus on the main thing it provides, the extensive library of products that are available across different NEONAIL marketplaces.",
       videoPath: "/nn-catalog.mp4",

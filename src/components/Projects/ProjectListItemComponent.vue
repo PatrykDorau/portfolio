@@ -154,7 +154,6 @@ const setVideoFrames = (type: "forwards" | "backwards" | "status") => {
 const routerTo = async (to: string) => {
   pStore.currentCaseStudy = props.data.id;
 
-
   router.push({ path: to });
 };
 

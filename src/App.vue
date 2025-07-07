@@ -1,9 +1,11 @@
 <template>
-  <router-view v-slot="{ Component }">
-    <transition :name="isFirstLoad ? 'fade' : 'slide-fade'">
-      <component :is="Component" />
-    </transition>
-  </router-view>
+  <KeepAlive>
+    <router-view v-slot="{ Component }">
+      <transition name="slide-fade">
+        <component :is="Component" />
+      </transition>
+    </router-view>
+  </KeepAlive>
 
   <AnimatePresence>
     <motion.div
@@ -45,7 +47,6 @@ const router = useRouter();
 const pStore = useProjectsStore();
 
 const showAnim = ref(false);
-const isFirstLoad = ref(true);
 const routeName = ref("");
 
 let dimensions = ref({
@@ -60,9 +61,6 @@ const resize = () => {
 
 onMounted(() => {
   window.addEventListener("resize", resize);
-  setTimeout(() => {
-    isFirstLoad.value = false;
-  }, 300);
 });
 
 onUnmounted(() => {
@@ -170,7 +168,7 @@ const name = computed(() => {
   };
 });
 
-const greetings = ["Bienvenue!", "Hallo!", "Witaj!", "Ciao!", "ようこそ!"];
+const greetings = ["Bienvenue!", "Hallo!", "Ciao!", "ようこそ!", "Witaj!"];
 
 let greetingAnimationActive = false;
 
