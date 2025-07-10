@@ -1,11 +1,9 @@
 <template>
-  <KeepAlive>
-    <router-view v-slot="{ Component }">
-      <transition name="slide-fade">
-        <component :is="Component" />
-      </transition>
-    </router-view>
-  </KeepAlive>
+  <router-view v-slot="{ Component }">
+    <transition name="slide-fade" mode="out-in">
+      <component :is="Component" />
+    </transition>
+  </router-view>
 
   <AnimatePresence>
     <motion.div
@@ -282,8 +280,8 @@ router.beforeEach(async (to, from, next) => {
 .slide-fade-leave-active {
   /* No delay needed here, let the old component fade out immediately */
   transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
+    opacity 0.1s ease,
+    transform 0.1s ease;
 }
 
 .slide-fade-enter-from {
