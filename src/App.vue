@@ -1,6 +1,6 @@
 <template>
   <router-view v-slot="{ Component }">
-    <transition name="slide-fade" mode="out-in">
+    <transition name="slide-fade">
       <component :is="Component" />
     </transition>
   </router-view>
@@ -295,7 +295,6 @@ router.beforeEach(async (to, from, next) => {
 
 .slide-fade-leave-to {
   opacity: 0;
-  transform: translateY(-40dvh);
 }
 
 .fade-enter-active,
