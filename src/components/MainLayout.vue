@@ -510,6 +510,474 @@ onUnmounted(() => {
   }
 });
 </script>
+<!-- <script setup lang="ts">
+import MainPageComponent from "./MainPage/MainPageComponent.vue";
+import SkillsComponent from "./Skills/SkillsComponent.vue";
+import ProjectListComponent from "./Projects/ProjectListComponent.vue";
+import NavComponent from "./Navbar/NavComponent.vue";
+import workAvailability from "./WorkAvailability/workAvailability.vue";
+import FooterComponent from "./footer/FooterComponent.vue";
+import { computed, onMounted, ref, onUnmounted, nextTick } from "vue";
+import { motion } from "motion-v"; // Re-added motion-v import
+
+import { useCalculateWavePath } from "../composables/useCalculateWavePath";
+import { useCalculateScrollProgress } from "../composables/useCalculateScrollProgress";
+
+const { getElementScrollProgress } = useCalculateScrollProgress();
+const { updateWavePath } = useCalculateWavePath();
+
+let hideNav = ref(false);
+let loaded = ref(false);
+
+let projectsActive = computed(() => {
+  return navigationItems.value.some(
+    (el) => el.active === true && el.title === "Projects"
+  );
+});
+
+let navigationItems = ref([
+  {
+    title: "About",
+    id: 1,
+    scrollId: "1",
+    active: true,
+  },
+  {
+    title: "Projects",
+    scrollId: "2",
+    id: 2,
+    active: false,
+  },
+  {
+    title: "Contact",
+    scrollId: "3",
+    id: 3,
+    active: false,
+  },
+]);
+
+// Define your brick animation specifications outside to avoid re-creation on every scroll
+const brickAnimationSpecs = [
+  // Brick 0 (Top)
+  {
+    index: 0,
+    translation: { startX: 0, endX: 80, startY: 0, endY: 300 }, // Falls right and down
+    rotation: { startDeg: 0, endDeg: 90 }, // Rotates 90 degrees
+    opacity: { start: 1, end: 0 },
+    progressWindow: [0.1, 0.9], // Animates when heroScrollProgress is between 0.1 and 0.3
+  },
+  // Brick 1 (Middle-Left)
+  {
+    index: 1,
+    translation: { startX: 0, endX: -150, startY: 0, endY: 350 }, // Falls far left and down
+    rotation: { startDeg: 0, endDeg: -120 }, // Rotates left
+    opacity: { start: 1, end: 0 },
+    progressWindow: [0.2, 0.9], // Starts after brick 0
+  },
+  // Brick 2 (Middle-Right)
+  {
+    index: 2,
+    translation: { startX: 0, endX: 150, startY: 0, endY: 350 }, // Falls far right and down
+    rotation: { startDeg: 0, endDeg: 120 }, // Rotates right
+    opacity: { start: 1, end: 0 },
+    progressWindow: [0.25, 0.9], // Starts slightly after brick 1
+  },
+  // Brick 3 (Bottom-Left)
+  {
+    index: 3,
+    translation: { startX: 0, endX: -250, startY: 0, endY: 400 }, // Falls very far left and down
+    rotation: { startDeg: 0, endDeg: -180 }, // Rotates even more
+    opacity: { start: 1, end: 0 },
+    progressWindow: [0.3, 0.9], // Starts after middle bricks
+  },
+  // Brick 4 (Bottom-Center)
+  {
+    index: 4,
+    translation: { startX: 0, endX: 0, startY: 0, endY: 450 }, // Falls straight down
+    rotation: { startDeg: 0, endDeg: 60 }, // Slight rotation
+    opacity: { start: 1, end: 0 },
+    progressWindow: [0.35, 0.9], // Starts after brick 3
+  },
+  // Brick 5 (Bottom-Right)
+  {
+    index: 5,
+    translation: { startX: 0, endX: 250, startY: 0, endY: 400 }, // Falls very far right and down
+    rotation: { startDeg: 0, endDeg: 180 }, // Rotates even more
+    opacity: { start: 1, end: 0 },
+    progressWindow: [0.4, 0.7], // Starts after brick 4, ends last
+  },
+];
+
+// Helper functions moved out of scrollHandler - kept as is, they are efficient
+function easeOutCubic(t: number) {
+  return 1 - Math.pow(1 - t, 3);
+}
+
+function rowEasing(
+  progress: number,
+  rowIndex: number,
+  totalRows: number,
+  strength: number
+) {
+  const delay = (rowIndex / (totalRows - 1)) * strength;
+  const adjusted = (progress - delay) / (1 - delay);
+  return easeOutCubic(Math.min(1, Math.max(0, adjusted)));
+}
+
+// Define breakpoints once
+const SMALL_DESKTOP_BREAKPOINT = 800;
+const MEDIUM_DESKTOP_BREAKPOINT = 1320;
+const LARGE_DESKTOP_BREAKPOINT = 1520;
+const SLOWNESS_FACTOR = 0.4;
+const BASE_MIN_HEIGHT = 60;
+const INITIAL_RANDOM_VARIATION = 34;
+
+// Cache DOM elements and other static values to avoid repeated queries/calculations
+let cachedElements: {
+  heroSectionElement: HTMLElement | null;
+  projectsSectionElement: HTMLElement | null;
+  skillsSectionElement: HTMLElement | null;
+  aboutSectionElement: HTMLElement | null;
+  pageTitleElement: HTMLElement | null;
+  fastForwardModelElement: HTMLElement | null;
+  bricks: NodeListOf<HTMLElement> | null;
+  skills: NodeListOf<HTMLElement> | null;
+  elements: NodeListOf<HTMLElement> | null;
+  projects: NodeListOf<HTMLElement> | null;
+  projectsTitle: HTMLElement | null;
+  wave: HTMLElement | null;
+  wave1: HTMLElement | null;
+  wave2: HTMLElement | null;
+  wave3: HTMLElement | null;
+  wave4: HTMLElement | null;
+  skillsTitle: HTMLElement | null;
+  aboutTitle: HTMLElement | null;
+  aboutContent: HTMLElement | null;
+} = {
+  heroSectionElement: null,
+  projectsSectionElement: null,
+  skillsSectionElement: null,
+  aboutSectionElement: null,
+  pageTitleElement: null,
+  fastForwardModelElement: null,
+  bricks: null,
+  skills: null,
+  elements: null,
+  projects: null,
+  projectsTitle: null,
+  wave: null,
+  wave1: null,
+  wave2: null,
+  wave3: null,
+  wave4: null,
+  skillsTitle: null,
+  aboutTitle: null,
+  aboutContent: null,
+};
+
+let sectionHeights: { [key: string]: number } = {}; // To store numerical heights of sections
+let maxScrollY: number = 1; // Initialized to 1 to prevent division by zero
+
+let scrollHandler: (() => void) | null = null;
+let ticking = false; // Flag for requestAnimationFrame
+let prevScrollPosition = 0;
+
+onMounted(() => {
+  // Use nextTick to ensure all components are rendered and elements are in DOM
+  nextTick(() => {
+    loaded.value = true;
+
+    // Cache all necessary DOM elements
+    cachedElements.heroSectionElement = document.querySelector(".main_page");
+    cachedElements.projectsSectionElement =
+      document.querySelector(".project__section");
+    cachedElements.skillsSectionElement =
+      document.querySelector(".skills__wrapper");
+    cachedElements.aboutSectionElement = document.querySelector(".about");
+    cachedElements.pageTitleElement = document.querySelector(".page__title");
+    cachedElements.fastForwardModelElement =
+      document.querySelector(".model-wrapper");
+    cachedElements.bricks = document.querySelectorAll(".brick");
+    cachedElements.skills = document.querySelectorAll(".skills .skill");
+    cachedElements.elements = document.querySelectorAll(
+      ".background__effect .element"
+    );
+    cachedElements.projects = document.querySelectorAll(".project-list-item");
+    cachedElements.projectsTitle = document.querySelector(".projects__title");
+    cachedElements.wave = document.querySelector("#wave");
+    cachedElements.wave1 = document.querySelector("#wave-1");
+    cachedElements.wave2 = document.querySelector("#wave-2");
+    cachedElements.wave3 = document.querySelector("#wave-3");
+    cachedElements.wave4 = document.querySelector("#wave-4");
+    cachedElements.skillsTitle = document.querySelector(".skills__title");
+    cachedElements.aboutTitle = document.querySelector(".about__title");
+    cachedElements.aboutContent = document.querySelector(".about__content");
+
+    // Function to calculate and cache section heights
+    const calculateSectionHeights = () => {
+      sectionHeights.hero =
+        cachedElements.heroSectionElement?.offsetHeight || 0;
+      sectionHeights.projects =
+        cachedElements.projectsSectionElement?.offsetHeight || 0;
+      sectionHeights.skills =
+        cachedElements.skillsSectionElement?.offsetHeight || 0;
+      sectionHeights.about =
+        cachedElements.aboutSectionElement?.offsetHeight || 0;
+      maxScrollY = document.documentElement.scrollHeight - window.innerHeight;
+      if (maxScrollY <= 0) {
+        maxScrollY = 1;
+      }
+    };
+
+    calculateSectionHeights(); // Call initially
+
+    // Initialize background elements height once and apply will-change
+    cachedElements.elements?.forEach((element) => {
+      element.style.height = `${BASE_MIN_HEIGHT + Math.random() * INITIAL_RANDOM_VARIATION}%`;
+      element.style.willChange = "transform"; // Hint browser for animation
+    });
+
+    // Apply will-change to frequently animated elements (using optional chaining for safety)
+    cachedElements.pageTitleElement?.style.setProperty(
+      "will-change",
+      "transform, opacity"
+    );
+    cachedElements.fastForwardModelElement?.style.setProperty(
+      "will-change",
+      "transform, opacity"
+    );
+    cachedElements.skillsTitle?.style.setProperty("will-change", "top");
+    cachedElements.projectsTitle?.style.setProperty("will-change", "top");
+    cachedElements.aboutTitle?.style.setProperty("will-change", "top");
+    cachedElements.aboutContent?.style.setProperty("will-change", "transform");
+    // Ensure will-change for bricks, skills, projects as well
+    cachedElements.bricks?.forEach((brick) =>
+      brick.style.setProperty("will-change", "transform, opacity")
+    );
+    cachedElements.skills?.forEach((skill) =>
+      skill.style.setProperty("will-change", "transform")
+    );
+    cachedElements.projects?.forEach((project) =>
+      project.style.setProperty("will-change", "transform")
+    );
+
+    scrollHandler = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+
+          // Navigation visibility logic
+          const newHideNavState = !(prevScrollPosition >= currentScrollY);
+          if (newHideNavState !== hideNav.value) {
+            hideNav.value = newHideNavState;
+          }
+          prevScrollPosition = currentScrollY;
+
+          // Calculate scroll progress for main sections
+          let heroScrollProgress = Math.min(
+            1,
+            currentScrollY / (sectionHeights.hero || 1)
+          );
+
+          const projectScrollProgress = cachedElements.projectsSectionElement
+            ? getElementScrollProgress(
+                currentScrollY,
+                cachedElements.projectsSectionElement
+              )
+            : 0;
+
+          const skillsScrollProgress = cachedElements.skillsSectionElement
+            ? getElementScrollProgress(
+                currentScrollY,
+                cachedElements.skillsSectionElement
+              )
+            : 0;
+
+          const aboutScrollProgress = cachedElements.aboutSectionElement
+            ? getElementScrollProgress(
+                currentScrollY,
+                cachedElements.aboutSectionElement
+              )
+            : 0;
+
+          // Page title and model animation
+          if (cachedElements.pageTitleElement) {
+            const translateY = heroScrollProgress * 20;
+            const opacity = 1 - heroScrollProgress;
+            cachedElements.pageTitleElement.style.transform = `translateY(-${translateY}vw)`;
+            cachedElements.pageTitleElement.style.opacity = `${opacity}`;
+          }
+          if (cachedElements.fastForwardModelElement) {
+            const translateY = heroScrollProgress * 100;
+            const opacity = 1.2 - heroScrollProgress;
+            cachedElements.fastForwardModelElement.style.transform = `translateY(${translateY}vw)`;
+            cachedElements.fastForwardModelElement.style.opacity = `${opacity}`;
+          }
+
+          // Skills title animation
+          if (cachedElements.skillsTitle) {
+            const newSkillsTopValue = 100 - projectScrollProgress * 110;
+            cachedElements.skillsTitle.style.top = `${newSkillsTopValue}%`;
+          }
+
+          // Skills animation
+          const skills = cachedElements.skills;
+          if (skills && skills.length > 0) {
+            const totalRows = skills.length / 2;
+            const easingStrength = 0.8;
+
+            skills.forEach((skill, index) => {
+              const rowIndex = Math.floor(index / 2);
+              const easedProgress = rowEasing(
+                projectScrollProgress,
+                rowIndex,
+                totalRows,
+                easingStrength
+              );
+              const finalTranslateX = (1 - easedProgress) * 110;
+
+              skill.style.transform =
+                index % 2 === 0
+                  ? `translateX(-${finalTranslateX}%)`
+                  : `translateX(${finalTranslateX}%)`;
+            });
+          }
+
+          // Projects title animation
+          if (cachedElements.projectsTitle) {
+            const newTopValue = 100 - heroScrollProgress * 110;
+            cachedElements.projectsTitle.style.top = `${newTopValue}%`;
+          }
+
+          // Projects list item animation
+          const projects = cachedElements.projects;
+          if (projects && projects.length > 0) {
+            let startTranslateY;
+            const currentWidth = window.innerWidth;
+            if (currentWidth < SMALL_DESKTOP_BREAKPOINT) {
+              startTranslateY = 0;
+            } else if (currentWidth < MEDIUM_DESKTOP_BREAKPOINT) {
+              startTranslateY = -10;
+            } else if (currentWidth < LARGE_DESKTOP_BREAKPOINT) {
+              startTranslateY = -40;
+            } else {
+              startTranslateY = -60;
+            }
+
+            const totalElements = projects.length;
+            const animationProgress = Math.max(
+              0,
+              Math.min(1, heroScrollProgress)
+            );
+
+            projects.forEach((element, index) => {
+              let adjustedProgress = animationProgress;
+              if (totalElements > 1) {
+                const normalizedIndex = index / (totalElements - 1);
+                const speedMultiplier = 1.5 - SLOWNESS_FACTOR * normalizedIndex;
+                adjustedProgress = animationProgress * speedMultiplier;
+              }
+              adjustedProgress = Math.max(0, Math.min(1, adjustedProgress));
+
+              const finalTranslateY = startTranslateY * (1 - adjustedProgress);
+              element.style.transform = `translateY(${finalTranslateY}%)`;
+            });
+          }
+
+          // About section title and content animation
+          if (cachedElements.aboutTitle) {
+            const newSkillsTopValue = 100 - skillsScrollProgress * 150;
+            cachedElements.aboutTitle.style.top = `${newSkillsTopValue}%`;
+          }
+          if (cachedElements.aboutContent) {
+            const newSkillsTopValue = 110 - skillsScrollProgress * 100;
+            cachedElements.aboutContent.style.transform = `translateY(${newSkillsTopValue}%)`;
+          }
+
+          // Brick animation - RESTORED ORIGINAL STYLING ASSIGNMENT
+          const bricks = cachedElements.bricks;
+          if (bricks && bricks.length === 6 && heroScrollProgress > 0.01) {
+            brickAnimationSpecs.forEach((spec) => {
+              const brick = bricks[spec.index];
+              if (!brick) return;
+
+              const [startProgress, endProgress] = spec.progressWindow;
+              let brickSpecificProgress =
+                (heroScrollProgress - startProgress) /
+                (endProgress - startProgress);
+
+              brickSpecificProgress = Math.max(
+                0,
+                Math.min(1, brickSpecificProgress)
+              );
+
+              // Interpolate translation
+              const currentTranslateX =
+                spec.translation.startX +
+                (spec.translation.endX - spec.translation.startX) *
+                  brickSpecificProgress;
+              const currentTranslateY =
+                spec.translation.startY +
+                (spec.translation.endY - spec.translation.startY) *
+                  brickSpecificProgress;
+
+              // Interpolate rotation
+              const currentRotateDeg =
+                spec.rotation.startDeg +
+                (spec.rotation.endDeg - spec.rotation.startDeg) *
+                  brickSpecificProgress;
+
+              // Interpolate opacity
+              const currentOpacity =
+                spec.opacity.start +
+                (spec.opacity.end - spec.opacity.start) * brickSpecificProgress;
+
+              // !!! RESTORED ORIGINAL ASSIGNMENT FOR BRICKS !!!
+              brick.style.cssText = `transform: translate(${currentTranslateX}px, ${currentTranslateY}px) rotate(${currentRotateDeg}deg) !important; opacity: ${currentOpacity} !important;`;
+            });
+          }
+
+          // Wave animations
+          const backgroundScrollProgress = Math.max(
+            0,
+            Math.min(1, currentScrollY / maxScrollY)
+          );
+
+          if (cachedElements.wave)
+            updateWavePath(heroScrollProgress, cachedElements.wave);
+          if (cachedElements.wave1)
+            updateWavePath(projectScrollProgress, cachedElements.wave1);
+          if (cachedElements.wave2)
+            updateWavePath(skillsScrollProgress, cachedElements.wave2);
+          if (cachedElements.wave3)
+            updateWavePath(aboutScrollProgress, cachedElements.wave3);
+          if (cachedElements.wave4)
+            updateWavePath(backgroundScrollProgress, cachedElements.wave4);
+
+          ticking = false; // Reset the ticking flag
+        });
+        ticking = true; // Set the ticking flag
+      }
+    };
+
+    window.addEventListener("scroll", scrollHandler);
+    window.addEventListener("resize", () => {
+      calculateSectionHeights(); // Recalculate heights on resize
+      scrollHandler!(); // Re-run scroll handler to adjust for new dimensions
+    });
+
+    // Call it once immediately to set initial states
+    scrollHandler();
+  });
+});
+
+onUnmounted(() => {
+  if (scrollHandler) {
+    window.removeEventListener("scroll", scrollHandler);
+    window.removeEventListener("resize", scrollHandler);
+  }
+});
+</script> -->
 
 <style lang="scss">
 .progress-bar {

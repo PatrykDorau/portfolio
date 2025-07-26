@@ -39,7 +39,7 @@
     </div>
     <div class="copyrights">
       <p>@2021 Patryk Dorau</p>
-      <p>All rights reserved</p>
+      <p>Copyleft! Free to inspire, copy, adapt</p>
       <p>Last updated on 29.06.2025 21:37 UTC</p>
     </div>
   </motion.div>

@@ -1,11 +1,14 @@
 <template>
   <div :class="[props.containerClass, currentAnimation, props.customClass]">
+    <div v-if="isLoading" class="loader__wrapper">
+      <div class="loader"></div>
+    </div>
     <canvas :class="props.canvasClass"></canvas>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, watch, ref, onUnmounted } from "vue";
+import { onMounted, watch, ref, onUnmounted, computed } from "vue";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
@@ -42,6 +45,18 @@ const videoControls = defineModel<{
 }>("videoControls");
 const animationList = defineModel<string[]>();
 const currentAnimation = ref("");
+
+let isLoading = ref(true);
+let modelLoaded = ref(false);
+let videosLoaded = ref(false);
+
+const overallLoading = computed(
+  () => !modelLoaded.value || !videosLoaded.value
+);
+
+watch(overallLoading, (isStillLoading) => {
+  isLoading.value = isStillLoading; // Sync component's isLoading with overall progress
+});
 
 watch(
   videoControls,
@@ -156,8 +171,8 @@ const setupVideoElements = async () => {
       preloadVideo(loader),
       props.videoSrc ? preloadVideo(vid) : Promise.resolve(vid), // Only preload vid if src exists
     ]);
-    console.log("All initial videos preloaded successfully.");
 
+    videosLoaded.value = true;
     // Now that they are preloaded, you can attempt to play them if needed immediately
     // For setupVideoElements, you might not want to play them immediately if they are for textures.
     // The play calls here are mostly for unblocking autoplay policies.
@@ -373,12 +388,8 @@ const updateVideoTextureOnModel = async () => {
     if (vid.src !== props.videoSrc) {
       // Only update if the source has actually changed
       vid.src = props.videoSrc;
-      console.log(
-        `Main video src changed to: ${props.videoSrc}. Preloading...`
-      );
       try {
         await preloadVideo(vid); // Wait for the new video to preload
-        console.log(`New main video ${props.videoSrc} preloaded successfully.`);
       } catch (e) {
         console.error("Error preloading new main video:", e);
         // Fallback to loader if the main video fails to preload
@@ -549,8 +560,6 @@ onMounted(() => {
   gltfLoader.load(props.modelPath, (gltf) => {
     model = gltf.scene;
 
-    console.log(model);
-
     model.position.set(
       props.modelPosition.x,
       props.modelPosition.y,
@@ -573,7 +582,9 @@ onMounted(() => {
         }
       }
     });
+
     scene!.add(model);
+    modelLoaded.value = true;
   });
 
   // --- Controls Setup ---
@@ -775,3 +786,29 @@ onUnmounted(() => {
   }
 });
 </script>
+
+<style lang="scss" scoped>
+.loader__wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+.loader {
+  width: 50px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(farthest-side, grey 94%, #0000) top/8px 8px no-repeat,
+    conic-gradient(#0000 30%, grey);
+  mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 0);
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 8px), #000 0);
+  animation: l13 1s infinite linear;
+}
+@keyframes l13 {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+</style>

@@ -1,5 +1,5 @@
 <template>
-  <router-view v-slot="{ Component }">
+  <router-view v-if="!greetingAnimationActive" v-slot="{ Component }">
     <transition name="slide-fade">
       <component :is="Component" />
     </transition>
@@ -7,7 +7,7 @@
 
   <AnimatePresence>
     <motion.div
-      v-if="showAnim"
+      v-if="showAnim || showAnimWelcome"
       class="page__name"
       :initial="name.initial"
       :animate="name.animate"
@@ -16,6 +16,23 @@
     >
   </AnimatePresence>
 
+  <AnimatePresence>
+    <motion.svg
+      v-if="showAnimWelcome"
+      key="animated-svg"
+      :initial="slideOut.initial"
+      :animate="slideOut.animate"
+      :exit="slideOut.exit"
+      class="page-transition__curve"
+    >
+      <motion.path
+        key="animated-path"
+        :initial="curveOut.initial"
+        :animate="curveOut.animate"
+        :exit="curveOut.exit"
+      ></motion.path>
+    </motion.svg>
+  </AnimatePresence>
   <AnimatePresence>
     <motion.svg
       v-if="showAnim"
@@ -45,7 +62,8 @@ const router = useRouter();
 const pStore = useProjectsStore();
 
 const showAnim = ref(false);
-const routeName = ref("");
+const showAnimWelcome = ref(true);
+const routeName = ref("Welcome!");
 
 let dimensions = ref({
   width: window.innerWidth,
@@ -120,6 +138,49 @@ const curve = computed(() => {
   };
 });
 
+const curveOut = computed(() => {
+  return {
+    initial: {
+      d: exitPathFlatTop.value,
+    },
+    animate: {
+      d: exitPathFlatTop.value,
+      transition: {
+        duration: 0.2,
+        delay: 0.1,
+      },
+    },
+    exit: {
+      d: targetPath.value,
+      transition: {
+        duration: 0.3,
+        delay: 0.3,
+      },
+    },
+  };
+});
+
+const slideOut = computed(() => {
+  return {
+    initial: {
+      top: "-300px", // SVG container starts off-screen below
+    },
+    animate: {
+      top: "-300px", // SVG container animates to cover the screen
+      transition: {
+        duration: 0,
+      },
+    },
+    // The 'exit' state is what the component animates to when AnimatePresence unmounts it.
+    exit: {
+      top: "calc(-100dvh - 600px)", // SVG container animates off-screen above
+      transition: {
+        duration: 0.3,
+        delay: 0.3,
+      },
+    },
+  };
+});
 const slide = computed(() => {
   return {
     initial: {
@@ -166,25 +227,47 @@ const name = computed(() => {
   };
 });
 
-const greetings = ["Bienvenue!", "Hallo!", "Ciao!", "ようこそ!", "Witaj!"];
+const greetings = [
+  "Bienvenue!",
+  "Ciao!",
+  "ようこそ!",
+  "Hallo!",
+  "Witaj!",
+  "Welcome!",
+];
 
-let greetingAnimationActive = false;
+let greetingAnimationActive = false; // Flag to prevent multiple animations at once
 
-async function startGreetingAnimation(greetings: string[], interval = 110) {
-  if (greetingAnimationActive) return;
-  greetingAnimationActive = true;
-
-  for (let i = 0; i < greetings.length; i++) {
-    routeName.value = greetings[i];
-    await new Promise(requestAnimationFrame);
-    await delay(interval);
+async function startGreetingAnimation(greetings: string[], interval = 150) {
+  if (greetingAnimationActive) {
+    console.log("Greeting animation already active, skipping.");
+    return; // Don't start if already running
   }
 
-  routeName.value = "Welcome!";
+  greetingAnimationActive = true;
+  console.log("Starting greeting animation...");
+
+  // Iterate through all greetings, including the last one
+  for (let i = 0; i < greetings.length; i++) {
+    routeName.value = greetings[i];
+    await delay(interval); // Wait for the specified interval before changing to the next greeting
+  }
+
+  // Ensure the very last greeting in the array is displayed for the final step
+  // before setting it to a specific "Welcome!" message if desired.
+  // If "Welcome!" is already the last item in `greetings`, this line is redundant
+  // unless you want to explicitly override it.
+  if (greetings[greetings.length - 1] !== "Welcome!") {
+    routeName.value = "Welcome!"; // Explicitly set to "Welcome!" after the loop
+  }
+  // If 'Welcome!' is already the last item in your 'greetings' array, you might just want this:
+  // routeName.value = greetings[greetings.length - 1]; // To stay on the very last greeting from the array
+
+  console.log("Greeting animation finished.");
   greetingAnimationActive = false;
 }
 
-function delay(ms: number) {
+function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -196,15 +279,23 @@ const OVERLAY_ENTER_DURATION_MS = Math.max(
     (name.value.animate.transition.delay || 0) * 1000
 );
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, __, next) => {
+  if (showAnimWelcome.value) {
+    setTimeout(() => {
+      startGreetingAnimation(greetings);
+    }, 200);
+    await new Promise((resolve) =>
+      setTimeout(resolve, OVERLAY_ENTER_DURATION_MS + 400)
+    );
+    next();
+    showAnimWelcome.value = false;
+    return;
+  }
+
   let code = to.params.code;
 
   if (code) {
     routeName.value = pStore.currentProject?.title || "Into unknown";
-  } else if (to.path === "/" && from.path == "/") {
-    setTimeout(() => {
-      startGreetingAnimation(greetings);
-    }, 200);
   } else {
     routeName.value = "Home";
   }

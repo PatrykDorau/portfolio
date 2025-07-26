@@ -35,8 +35,9 @@
             "
           >
             <img
-              src="/src/assets/images/controls/icons8-double-left-24.png"
-              alt="Move project video 15 seconds backwards"
+              src="/src/assets/images/controls/icons8-replay-5-30.png"
+              alt="Move project video 5 seconds backwards"
+              width="25"
             />
           </motion.div>
           <motion.div
@@ -73,9 +74,9 @@
             "
           >
             <img
-              class="rotate180"
-              src="/src/assets/images/controls/icons8-double-left-24.png"
-              alt="Move project video 15 seconds forwards"
+              src="/src/assets/images/controls/icons8-forward-5-24.png"
+              width="24"
+              alt="Move project video 5 seconds forwards"
             />
           </motion.div>
         </div>

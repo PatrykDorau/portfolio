@@ -18,8 +18,15 @@ export function useCalculateWavePath() {
     return `M${points[0]},${points[1]}L${points[2]},${points[3]}C${points[4]},${points[5]},${points[6]},${points[7]},${points[8]},${points[9]}C${points[10]},${points[11]},${points[12]},${points[13]},${points[14]},${points[15]}L${points[16]},${points[17]}L1440,320L0,320Z`;
   }
 
+  // In useCalculateWavePath:
+  let lastProgress = -1; // Keep track of the last progress
   function updateWavePath(progress: any, el: HTMLElement) {
     if (!el) return;
+
+    if (Math.abs(progress - lastProgress) < 0.005 && lastProgress !== -1) {
+      return;
+    }
+    lastProgress = progress;
 
     const interpolated = interpolatePoints(concave, convex, progress);
     el.setAttribute("d", buildPath(interpolated));

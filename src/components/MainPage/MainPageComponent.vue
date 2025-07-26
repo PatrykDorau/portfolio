@@ -64,7 +64,7 @@
         <span
           :initial="{ opacity: 0 }"
           :animate="{ opacity: 1 }"
-          :transition="{ duration: 0.5, delay: 0.1 }"
+          :transition="{ duration: 0.5, delay: 0.4 }"
         >
           stuff on web</span
         >
@@ -73,16 +73,17 @@
         class="subtitle"
         :initial="{ opacity: 0 }"
         :animate="{ opacity: 1 }"
-        :transition="{ duration: 0.5, delay: 0.2 }"
+        :transition="{ duration: 0.5, delay: 0.5 }"
       >
-        Hey there, I'm Patryk Dorau. This site is my works showcase. Currently
-        @Cosmogroup.
+        Hi there, I'm Patryk Dorau,
+        <span class="box__text">Front End Developer</span>. This site is my
+        works showcase.
       </motion.div>
       <motion.div
         class="subtitle"
         :initial="{ opacity: 0 }"
         :animate="{ opacity: 1 }"
-        :transition="{ duration: 0.5, delay: 0.2 }"
+        :transition="{ duration: 0.5, delay: 0.6 }"
       >
         Committed to keeping it real - no AI copy, no sales speak, just the
         work.
@@ -90,7 +91,7 @@
       <motion.div
         class="explore"
         :animate="{ transform: 'translateY(0)' }"
-        :transition="{ duration: 0.2, delay: 0.2 }"
+        :transition="{ duration: 0.2, delay: 0.7 }"
       >
         <div class="explore__text">Explore</div>
         <div class="explore__line"></div>
@@ -174,6 +175,12 @@ const shouldHideBar = computed(() => {
 </script>
 
 <style scoped lang="scss">
+.box__text {
+  background-color: rgba(255, 255, 255, 0.08);
+  padding-inline: 5px;
+  border-radius: 2px;
+}
+
 .window__bar {
   background-color: #0d0e0e !important;
   width: 100%;
@@ -506,6 +513,7 @@ const shouldHideBar = computed(() => {
     font-size: 80px;
     line-height: 84px;
     overflow: hidden;
+    margin-bottom: 7px;
   }
 
   .title__company {
