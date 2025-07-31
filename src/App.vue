@@ -76,10 +76,16 @@ const resize = () => {
 };
 
 onMounted(() => {
+  window.addEventListener("load", () => {
+    pStore.active = true;
+  });
   window.addEventListener("resize", resize);
 });
 
 onUnmounted(() => {
+  window.removeEventListener("load", () => {
+    pStore.active = true;
+  });
   window.removeEventListener("resize", resize);
 });
 

@@ -37,7 +37,7 @@
             <img
               src="/src/assets/images/controls/icons8-replay-5-30.png"
               alt="Move project video 5 seconds backwards"
-              width="25"
+              width="26"
             />
           </motion.div>
           <motion.div
@@ -55,11 +55,13 @@
               v-if="videoControls.status === 'pause'"
               src="/src/assets/images/controls/icons8-play-32.png"
               alt="Start project video icon"
+              width="25"
             />
             <img
               v-else
               src="/src/assets/images/controls/icons8-pause-32.png"
               alt="Pause project video icon"
+              width="25"
             />
           </motion.div>
           <motion.div
@@ -101,11 +103,18 @@
       >
         <span class="case-study__icon"
           ><img
+            v-if="pStore.active"
             src="/src/assets/images/controls/icons8-arrow-24.png"
-            alt=""
+            alt="arrow icon"
             height="20"
-            srcset=""
-        /></span>
+          />
+          <img
+            v-else
+            src="/Loading.gif"
+            style="width: 100%; height: 100%; z-index: 14"
+            alt="Loading animation"
+          />
+        </span>
         <span class="case-study__text">Case study</span>
       </button>
     </div>
@@ -153,6 +162,8 @@ const setVideoFrames = (type: "forwards" | "backwards" | "status") => {
 };
 
 const routerTo = async (to: string) => {
+  if (!pStore.active) return;
+
   pStore.currentCaseStudy = props.data.id;
 
   router.push({ path: to });

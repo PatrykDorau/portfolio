@@ -3,6 +3,8 @@ import { ref, computed } from "vue";
 import { Project, ProjectsList } from "../types/ProjectTypes";
 
 export const useProjectsStore = defineStore("caseStudy", () => {
+  let active = ref(false);
+
   let currentCaseStudy = ref<number>(0);
   let currentProject = computed((): Project | undefined => {
     return projectsList.find((pr) => pr.id === currentCaseStudy.value);
@@ -278,5 +280,5 @@ export const useProjectsStore = defineStore("caseStudy", () => {
     // },
   ];
 
-  return { currentProject, projectsList, currentCaseStudy };
+  return { currentProject, projectsList, currentCaseStudy, active };
 });
