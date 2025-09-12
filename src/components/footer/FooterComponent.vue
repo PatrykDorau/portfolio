@@ -30,7 +30,7 @@
         @mouseleave="resetEffect($event, '.resume')"
       >
         <a
-          href="https://drive.google.com/file/d/17cOTRdCwn3LABR1cztGms3i8QbvISL3g/view?usp=sharing"
+          href="https://drive.google.com/file/d/1kFrfXXxEnDKbBL4c-B7CUyRxSv9qSZpD/view?usp=drive_link?usp=sharing"
           target="_blank"
           class="resume"
           >Resume</a
